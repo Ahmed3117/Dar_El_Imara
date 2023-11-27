@@ -1,0 +1,251 @@
+<div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+    <span class=""> 
+            <a id="tab1categoryname" class="btn btn-block btn-sm" style="background-color: #085f84;color:white"
+            data-bs-toggle="modal" data-bs-target="#tab1addmaincategory">اضف بند رئيسى +</a>    
+    </span>
+    {% for category in main_categories %}
+    <div class="accordion" id="tab1accordionExample{{category.id}}">
+        <!-- main accordion (main category) -->
+        <div class="accordion-item">
+
+            <div class="accordion-button-div">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#tab1collapsecategory{{category.id}}"
+                    aria-expanded="false" aria-controls="collapsecategory{{category.id}}" style="background-color : #1f6086; color: aliceblue">
+                    <span class=""> {{category.main_category}} </span>
+                    
+                </button>
+            </div>
+
+            <div id="tab1collapsecategory{{category.id}}" class="accordion-collapse collapse" aria-labelledby="headingcategory{{category.id}}"
+                data-bs-parent="#tab1accordionExample{{category.id}}">
+                <div class="accordion-body">
+                        <span class=""> 
+                                <a id="tab1categoryname" class="btn btn-block btn-sm" style="background-color: #5e686d;color:white"
+                                data-bs-toggle="modal" data-bs-target="#tab1addsubcategory-{{category.id}}">اضف بند فرعى +</a>    
+                        </span>
+                    {% for subcategory in category.subcategorydetail_set.all %}
+                        <!-- sub accordion (sub category) -->
+                        <div class="accordion" id="tab1subaccordionExample{{category.id}}{{subcategory.id}}" >
+                                <div class="accordion-item" >
+                                    <div class="accordion-button-div" >
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#tab1subcollapsecategory{{category.id}}{{subcategory.id}}"
+                                            aria-expanded="false" aria-controls="subcollapsecategory{{category.id}}{{subcategory.id}}" style="background-color : #959595; color: aliceblue">
+                                            <span class="">  {{subcategory.sub_category}}</span>
+                                        </button>
+                                    </div>
+                                    <div id="tab1subcollapsecategory{{category.id}}{{subcategory.id}}" class="accordion-collapse collapse" aria-labelledby="headingcategory{{category.id}}{{subcategory.id}}"
+                                        data-bs-parent="#tab1subaccordionExample{{category.id}}{{subcategory.id}}">
+                                        <div class="accordion-body">
+                                                <div class="row m-3">
+                                
+                                                        <a class="btn btn-block btn-sm" style="background-color: #5e686d;color:aliceblue"
+                                                        data-bs-toggle="modal" data-bs-target="#tab1add{{category.id}}{{subcategory.id}}cost"
+                                                                    > اضف +</a>
+                                                </div>
+                            
+                        
+                                                <div class="row">
+                                                        <div class="col-12">
+                                                            
+                                                            <table id="tab1{{category.id}}{{subcategory.id}}costs" class="table table-sm table-color">
+                                                                        <thead  style="color: #085f84">
+                                                                            
+                                                                            <tr>
+                                                                                
+                                                                                    <th>تفاصيل المصنعيات</th>
+                                                                                    <th>تكاليف المصنعيات</th>
+                                                                                    <th>تفاصيل الخامات</th>
+                                                                                    <th>تكاليف الخامات</th>
+                                                                                    <th> تعديل</th>
+                                                                                    <th> حذف</th>
+                                                                            </tr>
+                                            
+                                                                        </thead>
+                                                                        <tbody class="tbody-color" id="tab1{{category.id}}{{subcategory.id}}cost">
+                                                                                
+                                                                                
+                                                                            
+                                                                        </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                        
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        <!-- end sub accordion (sub category) -->
+                    
+                        <!-- modal (اضف تكلفة) -->
+                        <div class="modal" id="tab1add{{category.id}}{{subcategory.id}}cost" tabindex="-1" aria-labelledby="add{{category.id}}{{subcategory.id}}costLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="tab1add{{category.id}}{{subcategory.id}}costLabel"> </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #085f84;"></button>
+                                    </div>
+                                    <div >
+                                            <form id = "tab1categoryform{{category.id}}{{subcategory.id}}">
+                                                {% csrf_token %}
+                                                <div class="row m-3" >
+                                                    <div class="col-6 d-flex justify-content-center">
+                                                            <input type="text" class="form-control form-control-sm " style="margin-right:5px; height:100px;" name="workers_reserves" placeholder="تفاصيل المصنعيات" id="tab1workers_reserves">
+                                                            <input class="form-control form-control-sm " style="margin-right:5px; margin-top:35px; width:80px; height:30px" type="number" name="workers_reserves_cost" id="tab1workers_reserves_cost" placeholder=" التكلفة" >
+                                                    </div>
+                                                    <div class="col-6 d-flex justify-content-center">
+                                                            <input type="text" class="form-control form-control-sm "  name="build_subjects" placeholder="تفاصيل الخامات" id="tab1build_subjects">
+                                                            <input class="form-control form-control-sm " style="margin-right:5px; margin-top:35px; width:80px;height:30px" type="number" name="build_subjects_cost" id="tab1build_subjects_cost" placeholder=" التكلفة">
+                                                    </div>
+                                                    
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="submit" onclick="tab1submitAddCostForm({{project_pk}},{{category.id}},{{subcategory.id}})" class="btn btn-dark btn-sm" style="background-color: #085f84;"> اضف </button>
+                                                </div>
+                                            </form>
+                            
+                                    </div>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <script>
+                            fetch('/get_project_expected_costs/{{subcategory.id}}/')
+                            .then(response => response.json())
+                            .then(data => {
+                                // Parse the data if it's a string
+                                if (typeof data === 'string') {
+                                    data = JSON.parse(data);
+                                }
+                                let table = document.getElementById('tab1{{category.id}}{{subcategory.id}}cost');
+                                // Check if data is an array before using forEach
+                                if (Array.isArray(data)) {
+                                    data.forEach(item => {
+                                        let row = table.insertRow();
+                                        for (let key in item.fields) {
+                                            let cell = row.insertCell();
+                                            cell.textContent = item.fields[key];
+                                        }
+                                        // Assuming the first column of the table is 'project'
+                                        
+                                        
+                                        // Do this for each field
+                                    });
+                                }
+                            });
+                        </script>
+
+                        <!-- end modal (اضف تكلفة) -->
+                        {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- end main accordion (main category) -->
+    </div>
+
+    <!-- add sub category modal -->
+    <div class="modal" id="tab1addsubcategory-{{category.id}}" tabindex="-1" aria-labelledby="addsubcategory-{{category.id}}-Label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tab1addsubcategory-{{category.id}}-Label"> </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+    
+                    <form id="tab1add-sub-category-form-{{category.id}}" method="POST" action="{% url "maindata:addsubcategory" project_pk category.id %}">
+                        {% csrf_token %}
+                        <input name="sub_category_{{category.id}}" type="text" class="form-control" placeholder=" ادخل اسم البند">
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-dark " style="background-color: #085f84;"> اضف </button>
+                        </div>
+                    </form>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+        <!-- end add sub category modal -->
+
+
+    {% endfor %}
+
+    <!-- add main category modal -->
+    <div class="modal" id="tab1addmaincategory" tabindex="-1" aria-labelledby="tab1addmaincategoryLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="tab1addmaincategoryLabel"> </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    <form id="tab1add-main-category-form" method="POST" action="{% url "maindata:addmaincategory" project_pk %}">
+                        {% csrf_token %}
+                        <input name="tab1main_category" type="text" class="form-control" placeholder=" ادخل اسم البند">
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <a onclick="tab1submitaddmaincategoryForm()" class="btn btn-dark " style="background-color: #085f84;"> اضف </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end add main category modal -->
+    <script>
+
+        function tab1submitaddmaincategoryForm() {
+            document.getElementById("tab1add-main-category-form").submit();
+        }
+
+        function tab1submitAddCostForm(project_pk, maincategory, subcategory) {
+            console.log(project_pk)
+            console.log(maincategory)
+            console.log(subcategory)
+        
+            var form = document.getElementById("tab1categoryform" + String(maincategory) + String(subcategory));
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            var newForm = form.cloneNode(true);  // Clone the form
+            form.parentNode.replaceChild(newForm, form);  // Replace the old form with the new one
+                const formData = new FormData(form);
+                fetch('/addprojectcost/'+project_pk+'/'+maincategory+'/'+subcategory+'/', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    newForm.reset();
+                    console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+                    console.log(data)
+                    
+                    console.log("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+                    // Parse the serialized data into a JavaScript object
+                    const expectedcost = JSON.parse(data.expectedcost);
+                    // Update the table with the retrieved data
+                    const tableBody = document.getElementById('tab1'+String(maincategory)+String(subcategory)+'cost');
+                    console.log(String(maincategory)+String(subcategory)+'cost')
+                    console.log(tableBody)
+                    // tableBody.innerHTML = ''; // Clear the existing table content
+                    
+                    expectedcost.forEach(cost => {
+                        console.log(cost)
+                        const row = tableBody.insertRow();
+                        for (let key in cost.fields) {
+                            const cell = row.insertCell();
+                            cell.textContent = cost.fields[key];
+                        }
+                    });
+                    
+                })
+                
+                .catch(error => console.error('Error:', error));
+            });
+            
+        }
+        
+    </script>
+
+
+</div>

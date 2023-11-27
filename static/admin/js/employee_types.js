@@ -4,7 +4,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     typeSelect.addEventListener('change', function() {
         var type = this.value;
-        var categoryType = type == 'E' ? 'E' : 'T';
+        // var categoryType = type == 'E' ? 'E' : 'T';
+        var categoryType = 'G'
+        if (type == "E"){
+            categoryType = 'E'
+        }
+        if (type == "W"){
+            categoryType = 'T'
+        }
 
         fetch('/get_categories/?category_type=' + categoryType)
             .then(response => response.json())

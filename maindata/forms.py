@@ -25,3 +25,5 @@ class EmployeeForm(forms.ModelForm):
             self.fields['category'].queryset = EmployeeCategory.objects.filter(category_type='E')
         if self.instance.type == 'W':
             self.fields['category'].queryset = EmployeeCategory.objects.filter(category_type='T')
+        if self.instance.type == 'G':
+            self.fields['category'].queryset = EmployeeCategory.objects.filter(category_type='G')

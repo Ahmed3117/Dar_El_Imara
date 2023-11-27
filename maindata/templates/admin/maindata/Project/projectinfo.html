@@ -1,0 +1,40 @@
+
+
+
+
+<a class="button rounded " data-bs-toggle="modal" data-bs-target="#showprojectdistribution-{{ project_id }}">معلومات </a>
+
+<div class="modal "  id="showprojectdistribution-{{ project_id }}" tabindex="-1" aria-labelledby="showprojectdistributionLabel-{{ project_id }}" aria-hidden="false">
+    <div class="modal-dialog  modal-xl" >
+        <div class="modal-content">
+            <div class="modal-header" dir="ltr">
+                <h5 class="modal-title" id="showprojectdistributionLabel-{{ project_id }}"> معلومات المشروع</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body" >
+                
+                <div id="printme">  
+                    <div class="row text-600 text-white bgc-default-tp1 py-25">
+                        
+                        <div class="col-3 col-sm-3">حساب اعمال التصميم</div>
+                        <div class="d-none d-sm-block col-3 col-sm-2">حساب اعمال الاشراف </div>
+                        <div class="d-none d-sm-block col-3 col-sm-2">تكاليف المشروع</div>
+                        <div class="col-2 col-sm-2">الوارد المالى</div>
+                        <div class="col-2 col-sm-2"> باقى الحساب</div>
+                    </div>
+                    <div class="text-95 text-secondary-d3">
+                        <div class="row mb-2 mb-sm-0 py-25">
+                            <div class="col-3 col-sm-3">{{totaldesignworkscosts}}</div>
+                            <div class="d-none d-sm-block col-3 col-sm-2">{{totalengsupervisionworkscosts}}</div>
+                            <div class="d-none d-sm-block col-3 col-sm-2">{{total_work_cost}}</div>
+                            <div class="col-2 col-sm-2">{{all_inpay_costs}}</div>
+                            <div class="col-2 col-sm-2">{{charge}}</div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

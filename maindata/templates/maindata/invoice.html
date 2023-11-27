@@ -1,1 +1,227 @@
-hhhhhhhhhhhh
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container">
+    <!-- tabs buttons -->
+    <ul class="nav nav-tabs" id="myTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab1-tab" data-bs-toggle="tab" data-bs-target="#tab1"
+                type="button" role="tab" aria-controls="tab1" aria-selected="true">الاجمالى المتوقع</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab2-tab" data-bs-toggle="tab" data-bs-target="#tab2" type="button"
+                role="tab" aria-controls="tab2" aria-selected="false">التكاليف الفعلية</button>
+        </li>
+    </ul>
+    <!-- end tabs buttons -->
+
+    <!-- tab 1 (الاجمالى المتوقع) -->
+    <div class="tab-content mt-3" id="myTabContent">
+        <div class="tab-pane fade show active" id="tab1" role="tabpanel" aria-labelledby="tab1-tab">
+
+            <div class="accordion" id="accordionExample">
+                <!-- main accordion (main category) -->
+                <div class="accordion-item">
+
+                    <div class="accordion-button-div">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsecategory"
+                            aria-expanded="false" aria-controls="collapsecategory" style="background-color : #1f6086; color: aliceblue">
+                            <span class=""> كهرباء </span>
+                        </button>
+                    </div>
+
+                    <div id="collapsecategory" class="accordion-collapse collapse" aria-labelledby="headingcategory"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+        
+                                <!-- sub accordion (sub category) -->
+                                <div class="accordion" id="subaccordionExample1" >
+                                        <div class="accordion-item" >
+                                            <div class="accordion-button-div" >
+                                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#subcollapsecategory1"
+                                                    aria-expanded="false" aria-controls="subcollapsecategory1" style="background-color : #959595; color: aliceblue">
+                                                    <span class="">  شد كابلات</span>
+                                                </button>
+                                            </div>
+                                            <div id="subcollapsecategory1" class="accordion-collapse collapse" aria-labelledby="headingcategory1"
+                                                data-bs-parent="#subaccordionExample1">
+                                                <div class="accordion-body">
+                                                        <div class="row m-3">
+                                       
+                                                                <a id="addnewprojectcost" class="btn btn-block btn-sm" style="background-color: #5e686d;color:aliceblue"
+                                                                data-bs-toggle="modal" data-bs-target="#addElectricitycost"
+                                                                            > اضف +</a>
+                                                        </div>
+                                    
+                                
+                                                        <div class="row">
+                                                                <div class="col-12">
+                                                                    
+                                                                    <table id="results" class="table table-sm table-color">
+                                                                                <thead  style="color: #085f84">
+                                                                                   
+                                                                                    <tr>
+                                                                                         <th> المشروع</th>
+                                                                                         <th> البند</th>
+                                                                                         <th>تفاصيل المصنعيات</th>
+                                                                                         <th>تكاليف المصنعيات</th>
+                                                                                         <th>تفاصيل الخامات</th>
+                                                                                         <th>تكاليف الخامات</th>
+                                                                                         <th> تعديل</th>
+                                                                                         <th> حذف</th>
+                                                                                    </tr>
+                                                    
+                                                                                </thead>
+                                                                                <tbody class="tbody-color">
+                                                                                        <form>
+                                                                                        <tr>
+                                
+                                                                                             <td>
+                                                                                                    المشروع الاول 
+                                                                                             </td>
+                                                                                             <td>
+                                                                                                    شد اسلاك  
+                                                                                             </td>
+                                                                                             <td>
+                                                                                                    100 جنية لشد الاسلاك  150 لثنى الاسلاك 
+                                                                                             </td>
+                                                                                             <td >
+                                                                                                     250
+                                                                                             </td>
+                                                                                             <td>
+                                                                                                     2 كابلات  استيراد + 7 هر جى 
+                                                                                             </td>
+                                                                                             <td >
+                                                                                                     500
+                                                                                             </td>
+                                                                                             <td>
+                                                                                                    <button type="submit" class="btn btn-secondary btn-sm" style="background-color: #88040b">حذف</button>
+                                                                                             </td>
+                                                                                             <td>
+                                                                                                    <button type="submit" class="btn btn-secondary btn-sm" style="background-color: #085f84">تعديل</button>
+                                                                                             </td>
+                                                                                        </tr>
+                                                                                    </form>
+                                                                                </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+                                
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <!-- end sub accordion (sub category) -->
+        
+                                <!-- modal (اضف تكلفة) -->
+                                <div class="modal" id="addElectricitycost" tabindex="-1" aria-labelledby="addElectricitycostLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="addElectricitycostLabel"> </h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: #085f84;"></button>
+                                            </div>
+                                            <div >
+                                
+                                                    <form>
+                                                            <div class="row m-3" >
+                                    
+                                                                <div class="col-2 d-flex justify-content-center">
+                                                                    
+                                                                    
+                                                                    <select class="form-control form-control-sm mr-2"  name="category_one" required value="">
+                                                                        <option selected value="">  تصنيف 1</option>
+                                                                        <option value=0>نظم</option>
+                                                                        <option value=1>تدريب</option>
+                                                                        <option value=2>تخطيط</option>
+                                                                    </select>
+                                                                    <label for="categoryname" class="car-label " style="margin-right:5px;">
+                                                                            <a id="categoryname" class="btn btn-block btn-sm" style="background-color: #085f84;color:white"
+                                                                                data-bs-toggle="modal" data-bs-target="#addmaincategory">+</a>
+                                                                    </label>
+                                    
+                                                                </div>
+                                    
+                                                                
+                                                                
+                                                                <div class="col-5 d-flex justify-content-center">
+                                                                        <input type="text" class="form-control form-control-sm "  name="out" placeholder="تفاصيل المصنعيات" id="out">
+                                                                        <input class="form-control form-control-sm " style="margin-right:5px; width:50px;" type="number" >
+                                                                </div>
+                                                                <div class="col-5 d-flex justify-content-center">
+                                                                        <input type="text" class="form-control form-control-sm "  name="out" placeholder="تفاصيل المصنعيات" id="out">
+                                                                        <input class="form-control form-control-sm " style="margin-right:5px; width:50px;" type="number" >
+                                                                </div>
+                                                                
+                                                            </div>
+                                                            
+                                                        </form>
+                                    
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a class="btn btn-dark btn-sm" data-bs-dismiss="modal" style="background-color: #085f84;"> الغاء </a>
+                                                <a onclick="submitAddElectricityCostForm()" class="btn btn-dark " style="background-color: #085f84;"> اضف </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end modal (اضف تكلفة) -->
+                        </div>
+                    </div>
+                </div>
+                <!-- end main accordion (main category) -->
+            </div>
+
+        </div>
+        <div class="tab-pane fade" id="tab2" role="tabpanel" aria-labelledby="tab2-tab">
+            <h3>Content for Tab 2</h3>
+            <p>This is the content of Tab 2.</p>
+        </div>
+    </div>
+
+
+    
+
+</div>
+
+<!-- add category modal -->
+
+<div class="modal" id="addmaincategory" tabindex="-1" aria-labelledby="addmaincategoryLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addmaincategoryLabel"> </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form id="add-category-form">
+                    <input name="category_name" type="text" class="form-control" placeholder=" ادخل اسم البند">
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-dark btn-sm" style="background-color: #085f84;" data-bs-dismiss="modal"> الغاء </a>
+                <a onclick="submitaddmaincategoryForm()" class="btn btn-dark " style="background-color: #085f84;"> اضف </a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end add category modal -->
+
+<script>
+        flatpickr("#datetimepicker", {
+          enableTime: true,
+          dateFormat: "Y-m-d H:i:s"
+        });
+</script>
+<script>
+        function submitaddmaincategoryForm() {
+          document.getElementById("add-category-form").submit();
+        }
+        function submitAddElectricityCostForm() {
+          document.getElementById("add-car-type").submit();
+        }
+</script>
+{% endblock content %}

@@ -3,14 +3,31 @@ import random
 from datetime import datetime
 
 class CategoryDetail(models.Model):
-    pay_category = models.CharField(verbose_name="اسم البند ", max_length=100, blank=True , null=True)
+    main_category = models.CharField(verbose_name="اسم البند ", max_length=100, blank=True , null=True)
+    class Meta:
+        verbose_name_plural = '   البنود الاساسية'
+        verbose_name = 'بند اساسى'
+
+    def __str__(self):
+        if self.main_category:
+            return self.main_category
+        else: 
+            return ''
+
+class SubCategoryDetail(models.Model):
+    sub_category = models.CharField(verbose_name="اسم البند ", max_length=100, blank=True , null=True)
+    main_category = models.ForeignKey('CategoryDetail', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="البند الاساسى")
 
     class Meta:
-        verbose_name_plural = '   البنود فرعية'
+        verbose_name_plural = '   البنود الفرعية'
         verbose_name = 'بند فرعى'
 
     def __str__(self):
-        return self.pay_category
+        if self.sub_category:
+            return self.sub_category
+        else:
+            return ''
+
 class DesignWorkType(models.Model):
     type = models.CharField(verbose_name="شغلانة ", max_length=100, blank=True , null=True)
     unit_price = models.IntegerField(verbose_name=" سعر الوحدة", default=1, null=True, blank=True)
@@ -25,6 +42,7 @@ class DesignWorkType(models.Model):
 
 class EmployeeCategory(models.Model):
     categorytype = (
+        ("G", "عام"),
         ("E", "هندسى"),
         ("T", "فنى"),
     )
@@ -36,6 +54,7 @@ class EmployeeCategory(models.Model):
 
     def __str__(self):
         return self.category
+
 class User(models.Model):
     name = models.CharField(verbose_name="الاسم", max_length=200, null=True, blank=True)
     national_id = models.CharField(verbose_name="الرقم القومى", max_length=14, null=True, blank=True)
@@ -65,10 +84,11 @@ class Client(User):
 
 class Employee(User):
     user_type = (
+        ("G", "عام"),
         ("E", "مهندس"),
         ("W", "عامل"),
     )
-    type = models.CharField(verbose_name="النوع", choices=user_type, max_length=10, default="W", blank=True)
+    type = models.CharField(verbose_name="النوع", choices=user_type, max_length=10, default="G", blank=True)
     category = models.ForeignKey('EmployeeCategory', on_delete=models.SET_NULL, null=True, blank=True, verbose_name="التصنيف")
     class Meta:
         verbose_name_plural = 'الموظفين'
@@ -193,8 +213,10 @@ class ProjectCosts(models.Model):
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     pay_reason = models.CharField(verbose_name="سبب الصرف", max_length=200, null=True, blank=True)
     pay_reason_category = models.CharField(verbose_name=" بند الصرف",choices=Payreasoncategory, max_length=10, null=True, blank=True)
-    # if Payreasoncategory == a: pay_category_detail column should appear
-    pay_category_detail = models.ForeignKey('CategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند فرعى") 
+    # if Payreasoncategory == a: main_category_detail column should appear
+    main_category_detail = models.ForeignKey('CategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند اساسى") 
+    sub_category_detail = models.ForeignKey('SubCategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند فرعى") 
+    for_witch_worker = models.ForeignKey('Employee', on_delete=models.SET_NULL,related_name='paid_worker', null=True,blank=True,verbose_name = "  العامل المستلم",limit_choices_to={"type": "W"})
     # if Payreasoncategory == b: market column should appear
     market = models.ForeignKey('MarketSources', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " المورد") 
     file = models.FileField(upload_to='costs_files/', null=True,blank=True,verbose_name = "   فاتورة ")
@@ -220,7 +242,8 @@ class ProjectCosts(models.Model):
             if self.pay_reason_category == 'a':
                 self.market = None
             elif self.pay_reason_category == 'b':
-                self.pay_category_detail = None
+                self.main_category_detail = None
+                self.for_witch_worker = None
 
         super(ProjectCosts, self).save(*args, **kwargs)
     
@@ -233,8 +256,8 @@ class ProjectCosts(models.Model):
             return self.workers.name  
         return "-"
     def get_name_of_pay_reason_category(self):
-        if self.pay_reason_category == 'a' and self.pay_category_detail:
-            return self.pay_category_detail.pay_category  
+        if self.pay_reason_category == 'a' and self.main_category_detail and self.for_witch_worker:
+            return self.main_category_detail.main_category + " => "+self.for_witch_worker.name
         elif self.pay_reason_category == 'b' and self.market:
             return self.market.sourcemarket  
 
@@ -248,6 +271,41 @@ class ProjectCosts(models.Model):
     class Meta:
         verbose_name_plural = '   مصروفات المشروع'
         verbose_name='  مصروف '
+
+class ExpectedProjectCosts(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
+    main_category_detail = models.ForeignKey('CategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند اساسى") 
+    sub_category_detail = models.ForeignKey('SubCategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند فرعى")
+    date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
+    workers_reserves = models.CharField(verbose_name=" تفاصيل المصنعيات", max_length=200, null=True, blank=True)
+    workers_reserves_cost = models.IntegerField(verbose_name=" تكلفة المصنعيات",  null=True, blank=True)
+    build_subjects = models.CharField(verbose_name=" تفاصيل الخامات", max_length=200, null=True, blank=True)
+    build_subjects_cost = models.IntegerField(verbose_name=" تكلفة الخامات",  null=True, blank=True)
+
+    def __str__(self) :
+        return str(self.project.project_name)
+
+    class Meta:
+        verbose_name_plural = ' المصروفات المتوقعة للمشروع'
+        verbose_name='  مصروف '
+class ProjectKhamatCosts(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
+    main_category_detail = models.ForeignKey('CategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند اساسى") 
+    sub_category_detail = models.ForeignKey('SubCategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند فرعى")
+    date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
+    who_paid = models.ForeignKey('User', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشترى") 
+    khama = models.CharField(verbose_name=" الشراء", max_length=200, null=True, blank=True)
+    market = models.ForeignKey('MarketSource', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المحل") 
+    price = models.IntegerField(verbose_name="  السعر",  null=True, blank=True)
+    paid = models.IntegerField(verbose_name="  المدفوع",  null=True, blank=True)
+    def charge(self):
+        return self.price - self.paid
+    def __str__(self) :
+        return str(self.project.project_name)
+    charge.short_description = "   الباقى" 
+    class Meta:
+        verbose_name_plural = ' خامات المشروع'
+        verbose_name='  خامة '
 
 class Project(models.Model):
     project_name = models.CharField(verbose_name="اسم المشروع", max_length=200)
@@ -304,16 +362,16 @@ class Project(models.Model):
         total_project_costs = 0
         for cost in projectcosts :
             total_project_costs += cost.all_costs
-        return total_project_costs
+        return total_project_costs  
 
     # مجموع ما تم الحصول عليه مكن مستحقات العاملين
-    # def totalprojectcosts(self):
-    #     projectstuffcost = ProjectCosts.objects.filter(project = self)
-    #     stuffcost = 0
-    #     for pay in projectstuffcost :
-    #         stuffcost += pay.ammount
-    #     return stuffcost
-    # مجموع الوارد المالى
+    def totalprojectcosts(self):
+        projectstuffcost = ProjectCosts.objects.filter(project = self)
+        stuffcost = 0
+        for pay in projectstuffcost :
+            stuffcost += pay.ammount
+        return stuffcost
+    #مجموع الوارد المالى
     def totalinpaycosts(self):
         inpaycosts = inPay.objects.filter(project = self)
         total_inpay_costs = 0
@@ -326,11 +384,11 @@ class Project(models.Model):
         charge = self.totalinpaycosts() - self.alldeservedmoney() -self.totalprojectengsupervisioncosts() + self.discount
         return int(charge)
 
-    totalprojectengsupervisioncosts.short_description = " مصاريف المشروع " 
-    projecttotaldesignworkscosts.short_description = " حساب اعمال التصميم" 
-    projectdeservedengsupervisioncosts.short_description = " حساب اعمال الاشراف الهندسى" 
-    alldeservedmoney.short_description = ' محموع حساب كل الاعمال '
-    totalinpaycosts.short_description = " مجموع الوارد المالى" 
+    # totalprojectengsupervisioncosts.short_description = " مصاريف المشروع " 
+    # projecttotaldesignworkscosts.short_description = " حساب اعمال التصميم" 
+    # projectdeservedengsupervisioncosts.short_description = " حساب اعمال الاشراف الهندسى" 
+    # alldeservedmoney.short_description = ' محموع حساب كل الاعمال '
+    # totalinpaycosts.short_description = " مجموع الوارد المالى" 
     charge.short_description = " باقى الحساب" 
     class Meta:
         verbose_name_plural = 'المشاريع'
@@ -357,21 +415,21 @@ class inPay(models.Model):
         verbose_name='  دفعة مالية'
 
 # السحب من الخزينة لصالح مشاريع معينة
-class OutPay(models.Model):
+class MoneyWithDraw(models.Model):
     project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     user = models.ForeignKey('Employee', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "القائم بالسحب") 
     ammount = models.IntegerField(verbose_name = " القيمة",null=True,blank=True)
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     pay_reason = models.CharField(verbose_name="سبب الصرف", max_length=200, null=True, blank=True)
     # pay_reason_category = models.CharField(verbose_name=" بند الصرف",choices=Payreasoncategory, max_length=10, null=True, blank=True)
-    # pay_category_detail = models.ForeignKey('CategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "تفصيل البند") 
+    # main_category_detail = models.ForeignKey('CategoryDetail', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "تفصيل البند") 
     # paid = models.IntegerField(verbose_name = " المدفوع",default = 0,null=True,blank=True)
     file = models.FileField(upload_to='out_pay_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     
     def __str__(self) :
         return str(self.ammount)
     class Meta:
-        verbose_name_plural = ' قائمة السحب من الخزينة'
+        verbose_name_plural = '  السحب من الخزينة'
         verbose_name=' عملية سحب '
 
 class OfficeCosts(models.Model):
