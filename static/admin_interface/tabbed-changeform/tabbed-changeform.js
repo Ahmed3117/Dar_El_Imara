@@ -5,10 +5,12 @@
     scope.tabbedChangeForm = {
 
         openTab: function (event, tabName) {
+            
             this.openTabByName(tabName);
         },
 
         openTabByName: function(tabName) {
+            console.log(tabName)
             let tablinkEl = document.getElementById("tablink-" + tabName);
             let tabcontentEl = document.getElementById("tabcontent-" + tabName);
             if (!tablinkEl || !tabcontentEl) {
@@ -40,9 +42,11 @@
         },
 
         openTabByLocationHash: function() {
+            
             let hash = window.location.hash;
             if (hash && hash !== "#") {
                 let tabName = hash.substring(1);
+                
                 if (this.openTabByName(tabName)) {
                     this.scrollTabsToTabByName(tabName);
                 }
@@ -50,6 +54,7 @@
         },
 
         scrollTabsToTabByName: function(tabName) {
+            
             let tabsEl = document.getElementById("tabbed-changeform-tabs");
             let tablinkEl = document.getElementById("tablink-" + tabName);
             if (!tabsEl || !tablinkEl) {
@@ -67,6 +72,7 @@
 
     // scope.tabbedChangeForm.openTabByLocationHash();
     document.addEventListener('DOMContentLoaded', function() {
+        console.log("mmmm")
         scope.tabbedChangeForm.openTabByLocationHash();
     }, false);
 

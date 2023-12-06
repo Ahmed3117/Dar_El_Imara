@@ -5,11 +5,14 @@ from django.utils.html import format_html
 from django.template.context_processors import csrf
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
-from .forms import EmployeeForm
-from .models import CategoryDetail, ExpectedProjectCosts, ProjectKhamatCosts,SubCategoryDetail, DesignWorkType, EmployeeCategory, Client, Employee, DesignWork, EngSupervision, ProjectCosts, Project, inPay, MoneyWithDraw, OfficeCosts, MarketSources
+from django.db.models import Sum
+
+from inoutpay.models import MoneyWithDraw
+from .models import ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
+from subdata.models import EmployeeCategory ,SubCategoryDetail,CategoryDetail
+from userdata.models import Employee,User
+from worksdata.models import DesignWork,EngSupervision
 from django.template.loader import render_to_string
-
-
 
 class UnpaidFilter(admin.SimpleListFilter):
     title = _('كشف المديونيات')
@@ -29,64 +32,6 @@ class UnpaidFilter(admin.SimpleListFilter):
             paid_ids = [project.id for project in queryset if project.charge() <= 0]
             return queryset.filter(id__in=paid_ids)
 
-class SubCategoryDetailInlineAdmin(admin.TabularInline):
-    model = SubCategoryDetail
-    extra = 1
-    show_change_link = True
-    # classes = ('collapse',)
-    
-class CategoryDetailAdmin(admin.ModelAdmin):
-    list_display = ('main_category',)
-    search_fields = ('main_category',)
-    inlines = [SubCategoryDetailInlineAdmin]
-
-class SubCategoryDetailAdmin(admin.ModelAdmin):
-    list_display = ('sub_category','main_category')
-    search_fields = ('sub_category','main_category')
-    list_filter = ('main_category',)
-
-class DesignWorkTypeAdmin(admin.ModelAdmin):
-    list_display = ('type', 'unit_price', 'mitr_price')
-    list_filter = ('type',)
-    search_fields = ('type',)
-
-class EmployeeCategoryAdmin(admin.ModelAdmin):
-    list_display = ('category', 'category_type')
-    list_filter = ('category_type',)
-    search_fields = ('category',)
-
-class ClientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'national_id', 'phone_number', 'address', 'code')
-    search_fields = ('name', 'national_id', 'phone_number', 'address', 'code')
-
-class EmployeeAdmin(admin.ModelAdmin):
-    form = EmployeeForm
-    list_display = ('name', 'type', 'category')
-    list_filter = ('type', 'category')
-    search_fields = ('name', 'type', 'category')
-    class Media:
-        js = ('/static/admin/js/employee_types.js',)
-    
-class DesignWorkAdmin(admin.ModelAdmin):
-    list_display = ('project', 'worktype', 'account_way', 'ammount', 'date_added', 'work_cost')
-    list_filter = ('project', 'account_way', 'worktype')
-    search_fields = ('project__project_name', 'worktype__type')
-    list_select_related = ('project', 'worktype')
-    
-class EngSupervisionAdmin(admin.ModelAdmin):
-    list_display = ('project', 'account_way', 'ammount', 'date_added', 'all_costs', 'work_cost')
-    list_filter = ('project', 'account_way')
-    search_fields = ('project__project_name',)
-    # list_select_related = ('project',)
-
-class ProjectCostsAdmin(admin.ModelAdmin):
-    list_display = ('project', 'ammount', 'who_paid', 'get_name_of_paid_person', 'pay_reason', 'pay_reason_category', 'get_name_of_pay_reason_category')
-    list_filter = ('project', 'who_paid', 'pay_reason_category')
-    search_fields = ('project__project_name', 'client__name', 'engineers__name', 'workers__name', 'pay_reason', 'main_category_detail__main_category', 'market__sourcemarket')
-    list_select_related = ('project', 'client', 'engineers', 'workers', 'main_category_detail', 'market')
-    autocomplete_fields = ('project',)
-    class Media:
-        js = ('/static/admin/js/custom_project_costs.js',)
 class ExpectedProjectCostsAdmin(admin.ModelAdmin):
     list_display = ('project', 'main_category_detail', 'sub_category_detail', 'workers_reserves', 'workers_reserves_cost', 'build_subjects', 'build_subjects_cost')
     list_filter = ('project', 'main_category_detail', 'sub_category_detail')
@@ -96,63 +41,63 @@ class ExpectedProjectCostsAdmin(admin.ModelAdmin):
         js = ('/static/admin/js/custom_project_costs.js',)
     
 class ProjectKhamatCostsAdmin(admin.ModelAdmin):
-    list_display = ('project', 'main_category_detail', 'sub_category_detail','date_added')
+    list_display = ('project', 'main_category_detail', 'sub_category_detail','who_paid','khama','market','price','paid','date_added')
     list_filter = ('project', 'main_category_detail', 'sub_category_detail')
     search_fields = ('project__project_name', 'main_category_detail__main_category', 'sub_category_detail__sub_category')
-    autocomplete_fields = ('project',)
+    autocomplete_fields = ('project','market','who_paid')
     class Media:
         js = ('/static/admin/js/custom_project_costs.js',)
     
-class inPayAdmin(admin.ModelAdmin):
-    list_display = ('project', 'paid', 'giver', 'recipient', 'date_added')
-    list_filter = ('project', 'giver', 'recipient')
-    search_fields = ('project__project_name', 'giver', 'recipient')
-
+class ProjectWorkersReservesAdmin(admin.ModelAdmin):
+    list_display = ('project', 'main_category_detail', 'sub_category_detail','date_added','worker','paid','charge')
+    list_filter = ('project', 'main_category_detail', 'sub_category_detail','paid')
+    search_fields = ('project__project_name', 'main_category_detail__main_category', 'sub_category_detail__sub_category')
+    autocomplete_fields = ('project','worker')
+    class Media:
+        js = ('/static/admin/js/custom_project_costs.js',)
+    
 class DesignWorkInlineAdmin(admin.TabularInline):
     model = DesignWork
     extra = 1
     show_change_link = True
     # classes = ('collapse',)
+
 class EngSupervisionInlineAdmin(admin.TabularInline):
     model = EngSupervision
     extra = 1
     show_change_link = True
     # classes = ('collapse',)
-class ProjectCostsInlineAdmin(admin.TabularInline):
-    model = ProjectCosts
-    extra = 3
-    show_change_link = True
-    def formfield_for_dbfield(self, db_field, request, **kwargs):
-        field = super().formfield_for_dbfield(db_field, request, **kwargs)
-        
-        # Add placeholders for specific fields
-        if db_field.name == 'who_paid':
-            field.widget.attrs['placeholder'] = 'القائم بالدفع'
-        elif db_field.name == 'ammount':
-            field.widget.attrs['placeholder'] = 'القيمة'
-        elif db_field.name == 'pay_reason':
-            field.widget.attrs['placeholder'] = 'سبب الصرف'
-        elif db_field.name == 'workers':
-            field.widget.attrs['placeholder'] = ' العامل'
 
-        # Add more fields and their placeholders as needed
-
-        return field
 class ExpectedProjectCostsInlineAdmin(admin.TabularInline):
     model = ExpectedProjectCosts
-    extra = 0
+    extra = 1
     show_change_link = True
+    # classes = ('collapse',)
+    
 class ProjectKhamatCostsInlineAdmin(admin.TabularInline):
     model = ProjectKhamatCosts
-    extra = 0
+    extra = 1
     show_change_link = True
+    # classes = ('collapse',)
+    autocomplete_fields = ('who_paid',)
+
+class ProjectWorkersReservesInlineAdmin(admin.TabularInline):
+    model = ProjectWorkersReserves
+    extra = 1
+    show_change_link = True
+    # classes = ('collapse',)
+
+class inPayAdmin(admin.ModelAdmin):
+    list_display = ('project', 'paid', 'giver', 'recipient', 'date_added')
+    list_filter = ('project', )
+    search_fields = ('project__project_name', 'giver__name', 'recipient__name', 'giver__code', 'recipient__code')
+    autocomplete_fields = ('giver', 'recipient')
 
 class InpayInlineAdmin(admin.TabularInline):
     model = inPay
     extra = 1
     show_change_link = True
     # classes = ('collapse',)
-    
     
 class ProjectAdmin(admin.ModelAdmin):
     # def get_queryset(self, request):
@@ -161,39 +106,71 @@ class ProjectAdmin(admin.ModelAdmin):
     #     queryset = super().get_queryset(request)
     #     queryset = queryset.filter(is_done=False)
     #     return queryset
-    
+
     list_display_links = ('project_name',)
     # list_display = ('is_done','project_name','client','projectinfo','totalprojectengsupervisioncosts','projecttotaldesignworkscosts','projectdeservedengsupervisioncosts','alldeservedmoney','totalinpaycosts','charge','designworksdetails','expectedprojectcosts','projectcosts','engsupervisionworksdetails','inpaydatails','printinvoice','date_added')
-    list_display = ('is_done','project_name','client','projectinfo','designworksdetails','expectedprojectcosts','projectcosts','engsupervisionworksdetails','inpaydatails','printinvoice','date_added')
+    list_display = ('is_done','project_name','client','projectinfo','details','printinvoice','date_added')
     search_fields = ('client__name','project_name','project_address')
     list_filter = ('date_added','is_done',UnpaidFilter)
-
-    inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,InpayInlineAdmin]
+    inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin]
     change_list_template = 'admin/maindata/Project/change_list.html'
+    autocomplete_fields = ('client',)
     # class Media:
     #     js = ('/static/admin/js/custom_project_costs_inline.js',)
     # form = ClientForm
     # تفاصيل الشغلانات التابعة لهذا المشروع
 
+    def details(self,obj):
+        project_id = obj.id
+        worksdata_designwork_changelist_url = reverse('admin:worksdata_designwork_changelist')
+        worksdata_designwork_changelist_url += f'?project_id={project_id}'
+        worksdata_engsupervision_changelist_url = reverse('admin:worksdata_engsupervision_changelist')
+        worksdata_engsupervision_changelist_url += f'?project_id={project_id}'
+        maindata_projectkhamatcosts_changelist_url = reverse('admin:maindata_projectkhamatcosts_changelist')
+        maindata_projectkhamatcosts_changelist_url += f'?project_id={project_id}'
+        maindata_projectworkersreserves_changelist_url = reverse('admin:maindata_projectworkersreserves_changelist')
+        maindata_projectworkersreserves_changelist_url += f'?project_id={project_id}'
+        maindata_expectedprojectcosts_changelist_url = reverse('admin:maindata_expectedprojectcosts_changelist')
+        maindata_expectedprojectcosts_changelist_url += f'?project_id={project_id}'
+        maindata_inpay_changelist_url = reverse('admin:maindata_inpay_changelist')
+        maindata_inpay_changelist_url += f'?project_id={project_id}'
+        modal_html = render_to_string('admin/maindata/project/details.html', {
+            'worksdata_designwork_changelist_url' : worksdata_designwork_changelist_url,
+            'worksdata_engsupervision_changelist_url' : worksdata_engsupervision_changelist_url,
+            'maindata_projectkhamatcosts_changelist_url' : maindata_projectkhamatcosts_changelist_url,
+            'maindata_projectworkersreserves_changelist_url' : maindata_projectworkersreserves_changelist_url,
+            'maindata_expectedprojectcosts_changelist_url' : maindata_expectedprojectcosts_changelist_url,
+            'maindata_inpay_changelist_url' : maindata_inpay_changelist_url,
+            'project_id' : project_id,
+        })
+        return format_html(modal_html)
+    
     def designworksdetails(self, obj):
         project_id = obj.id
-        url = reverse('admin:maindata_designwork_changelist')
+        url = reverse('admin:worksdata_designwork_changelist')
         url += f'?project_id={project_id}'
         return format_html('<a class="button rounded " href="{}"> اعمال التصميم </a>', url)
     
     # تفاصيل اعمال الاشراف الهندسى
     def engsupervisionworksdetails(self, obj):
         project_id = obj.id
-        url = reverse('admin:maindata_engsupervision_changelist')
+        url = reverse('admin:worksdata_engsupervision_changelist')
         url += f'?project_id={project_id}'
         return format_html('<a class="button rounded " href="{}"> اعمال الاشراف  </a>', url)
     
-    # تفاصيل مصروفات المشروع
-    def projectcosts(self, obj):
+    # تفاصيل  تكاليف الخامات
+    def projectkhamatcosts(self, obj):
         project_id = obj.id
-        url = reverse('admin:maindata_projectcosts_changelist')
+        url = reverse('admin:maindata_projectkhamatcosts_changelist')
         url += f'?project_id={project_id}'
-        return format_html('<a class="button rounded " href="{}">  المصروفات الفعلية</a>', url)
+        return format_html('<a class="button rounded " href="{}">   تكاليف الخامات</a>', url)
+
+    # تفاصيل  تكاليف الخامات
+    def projectworkersreserves(self, obj):
+        project_id = obj.id
+        url = reverse('admin:maindata_projectworkersreserves_changelist')
+        url += f'?project_id={project_id}'
+        return format_html('<a class="button rounded " href="{}">   تكاليف المصنعيات</a>', url)
     
     def expectedprojectcosts(self, obj):
         project_id = obj.id
@@ -207,7 +184,6 @@ class ProjectAdmin(admin.ModelAdmin):
         url = reverse('admin:maindata_inpay_changelist')
         url += f'?project_id={project_id}'
         return format_html('<a class="button rounded " href="{}">  الوارد المالى</a>', url)
-    
     # report
     def printinvoice(self, obj):
         project_id = obj.id
@@ -228,59 +204,89 @@ class ProjectAdmin(admin.ModelAdmin):
         for work in designworks :
             totaldesignworkscosts += work.work_cost
         #------------------------------------
-        # تكاليف دفعها العميل
-        # paid_by_client = ProjectCosts.objects.filter(project = self , who_paid = 'c')
-        # total_paid_by_client = 0
-        # for paid in paid_by_client :
-        #     total_paid_by_client += paid.ammount
-        #------------------------------------
         # حساب اعمال الاشراف 
         engsupervisionworks = EngSupervision.objects.filter(project = obj)
         totalengsupervisionworkscosts = 0
         for work in engsupervisionworks :
             totalengsupervisionworkscosts += work.work_cost
         #------------------------------------
-        # تكاليف المشروع
-        total_work_cost = 0
-        work_costs = ProjectCosts.objects.filter(project = obj)
-        for cost in work_costs:
-            if cost.ammount:
-                total_work_cost = total_work_cost + cost.ammount 
+        # تكاليف الخامات
+        total_khamat_cost = 0
+        khamat_costs = ProjectKhamatCosts.objects.filter(project = obj)
+        for cost in khamat_costs:
+            if cost.price:
+                total_khamat_cost = total_khamat_cost + cost.price 
+        #------------------------------------
+        # تكاليف المصنعيات
+        total_workersreserves_cost = 0
+        workersreserves_costs = ProjectWorkersReserves.objects.filter(project = obj)
+        for cost in workersreserves_costs:
+            if cost.price:
+                total_workersreserves_cost = total_workersreserves_cost + cost.price 
         #------------------------------------
         #الوارد المالى
         inpaycosts = inPay.objects.filter(project = obj)
         total_inpay_costs = 0
         for inpay in inpaycosts :
             total_inpay_costs += inpay.paid
-        all_inpay_costs = total_inpay_costs + obj.paiddirectlybyclient()
+        all_inpay_costs = total_inpay_costs
+        # all_inpay_costs = total_inpay_costs + obj.paiddirectlybyclient()
         #------------------------------------
         # باقى الحساب
-        charge = obj.totalinpaycosts() - obj.alldeservedmoney() -obj.totalprojectengsupervisioncosts() + obj.discount
-
+        # charge =0
+        charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost + obj.discount
         #------------------------------------
+        #########################################################################################
+        #########################################################################################
+        #------------------------------------
+        # تكاليف دفعها العميل
+        # paid_by_client = ProjectCosts.objects.filter(project = self , who_paid = 'c')
+        # total_paid_by_client = 0
+        # for paid in paid_by_client :
+        #     total_paid_by_client += paid.ammount
+        #----------------------------------------
+        project_workersreserves = ProjectWorkersReserves.objects.filter(project = obj).values('worker').annotate(total_price = Sum('price'),total_paid = Sum('paid'))
+        workersreserves = []
+        for inst in project_workersreserves:
+            worker_data = []
+            worker = User.objects.get(id = inst['worker'])
+            worker_name = worker.name
+            worker_code = worker.code
+            worker_job = Employee.objects.get(user = worker).category.category
+            
+            worker_data.append(worker.name)
+            worker_data.append(worker_job)
+            worker_data.append(inst['total_price'])
+            worker_data.append(inst['total_paid'])
+            worker_data.append(inst['total_price'] - inst['total_paid'])
+            
+            
+            print(worker_data)
+            workersreserves.append(worker_data)
+        print(workersreserves)
+
         modal_html = render_to_string('admin/maindata/project/projectinfo.html', {
             'project_id' : project_id,
             'totaldesignworkscosts' : totaldesignworkscosts,
             'totalengsupervisionworkscosts' : totalengsupervisionworkscosts,
-            'total_work_cost' : total_work_cost,
+            'total_khamat_cost' : total_khamat_cost,
+            'total_workersreserves_cost' : total_workersreserves_cost,
             'all_inpay_costs' : all_inpay_costs,
             'charge' : int(charge),
+            'workersreserves' : workersreserves,
         })
         return format_html(modal_html)
+
     designworksdetails.short_description = '  اعمال التصميم '
-    projectcosts.short_description = 'المصروفات الفعلية'
+    projectkhamatcosts.short_description = 'تكاليف الخامات'
+    projectworkersreserves.short_description = 'تكاليف المصنعيات'
     expectedprojectcosts.short_description = 'المصروفات المتوقعة'
     engsupervisionworksdetails.short_description = '  اعمال الاشراف  '
     inpaydatails.short_description = 'تفاصيل الوارد المالى '
     printinvoice.short_description = ' تقرير '
     showaddcostspage.short_description = ' اضف تكاليف '
     projectinfo.short_description = '  معلومات المشروع '
-
-
-class MoneyWithDrawAdmin(admin.ModelAdmin):
-    list_display = ('project', 'user', 'ammount', 'date_added', 'pay_reason')
-    list_filter = ('project', 'user','date_added')
-    search_fields = ('project__project_name', 'user__name', 'pay_reason')
+    details.short_description = ' تفاصيل '
 
 class OfficeCostsAdmin(admin.ModelAdmin):
     list_display = ('costtype', 'ammount', 'date_added', 'cost_reason', 'market', 'paid')
@@ -288,26 +294,9 @@ class OfficeCostsAdmin(admin.ModelAdmin):
     search_fields = ('cost_reason', 'market__sourcemarket')
     list_select_related = ('market',)
 
-class MarketSourcesAdmin(admin.ModelAdmin):
-    list_display = ('sourcemarket', 'phone_number', 'address')
-    search_fields = ('sourcemarket', 'phone_number', 'address')
-
-# Register your models with the admin site
+admin.site.register(inPay, inPayAdmin)
 admin.site.register(Project,ProjectAdmin)
-admin.site.register(CategoryDetail, CategoryDetailAdmin)
-# admin.site.register(SubCategoryDetail, SubCategoryDetailAdmin)
-admin.site.register(DesignWorkType, DesignWorkTypeAdmin)
-admin.site.register(EmployeeCategory, EmployeeCategoryAdmin)
-admin.site.register(Client, ClientAdmin)
-admin.site.register(Employee, EmployeeAdmin)
-admin.site.register(DesignWork, DesignWorkAdmin)
-admin.site.register(EngSupervision, EngSupervisionAdmin)
-admin.site.register(ProjectCosts, ProjectCostsAdmin)
 admin.site.register(ExpectedProjectCosts, ExpectedProjectCostsAdmin)
 admin.site.register(ProjectKhamatCosts, ProjectKhamatCostsAdmin)
-admin.site.register(inPay, inPayAdmin)
-admin.site.register(MoneyWithDraw, MoneyWithDrawAdmin)
-admin.site.register(OfficeCosts, OfficeCostsAdmin)
-admin.site.register(MarketSources, MarketSourcesAdmin)
-
-
+admin.site.register(ProjectWorkersReserves, ProjectWorkersReservesAdmin)
+# admin.site.register(OfficeCosts, OfficeCostsAdmin)

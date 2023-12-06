@@ -1,0 +1,35 @@
+
+
+
+
+<a class="button rounded " data-bs-toggle="modal" data-bs-target="#showprojectdetails-{{ project_id }}">تفاصيل </a>
+
+<div class="modal "  id="showprojectdetails-{{ project_id }}" tabindex="-1" aria-labelledby="showprojectdetailsLabel-{{ project_id }}" aria-hidden="false">
+    <div class="modal-dialog  modal-xl" >
+        <div class="modal-content">
+            <div class="modal-header" dir="ltr">
+                <h5 class="modal-title" id="showprojectdetailsLabel-{{ project_id }}"> تفاصيل المشروع</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body" >
+                
+                <div >  
+                    
+                    <div class="text-95 text-secondary-d3">
+                        <div class="row text-white py-25">
+                            <div class="col-2 col-sm-2"><a class="button rounded " href="{{worksdata_designwork_changelist_url}}"> اعمال التصميم </a></div>
+                            <div class="d-none d-sm-block col-2 col-sm-2"><a class="button rounded " href="{{worksdata_engsupervision_changelist_url}}"> اعمال الاشراف  </a></div>
+                            <div class="d-none d-sm-block col-2 col-sm-2"><a class="button rounded " href="{{maindata_projectkhamatcosts_changelist_url}}">   تكاليف الخامات</a></div>
+                            <div class="d-none d-sm-block col-2 col-sm-2"><a class="button rounded " href="{{maindata_projectworkersreserves_changelist_url}}">   تكاليف المصنعيات</a></div>
+                            <div class="col-2 col-sm-2"><a class="button rounded " href="{{maindata_expectedprojectcosts_changelist_url}}">   المصروفات المتوقعة</a></div>
+                            <div class="col-2 col-sm-2"><a class="button rounded " href="{{maindata_inpay_changelist_url}}">  الوارد المالى</a></div> 
+                        </div>
+                    </div>
+                
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -2,38 +2,66 @@
 
 
 
-<a class="button rounded " data-bs-toggle="modal" data-bs-target="#showprojectdistribution-{{ project_id }}">معلومات </a>
+<a class="button rounded " data-bs-toggle="modal" data-bs-target="#showprojectinfo-{{ project_id }}">معلومات </a>
 
-<div class="modal "  id="showprojectdistribution-{{ project_id }}" tabindex="-1" aria-labelledby="showprojectdistributionLabel-{{ project_id }}" aria-hidden="false">
+<div class="modal "  id="showprojectinfo-{{ project_id }}" tabindex="-1" aria-labelledby="showprojectinfoLabel-{{ project_id }}" aria-hidden="false">
     <div class="modal-dialog  modal-xl" >
         <div class="modal-content">
             <div class="modal-header" dir="ltr">
-                <h5 class="modal-title" id="showprojectdistributionLabel-{{ project_id }}"> معلومات المشروع</h5>
+                <h5 class="modal-title" id="showprojectinfoLabel-{{ project_id }}"> معلومات المشروع</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             
             <div class="modal-body" >
                 
-                <div id="printme">  
-                    <div class="row text-600 text-white bgc-default-tp1 py-25">
+                <div >  
+                    <div class="row text-white bgc-default-tp1 py-25">
                         
-                        <div class="col-3 col-sm-3">حساب اعمال التصميم</div>
-                        <div class="d-none d-sm-block col-3 col-sm-2">حساب اعمال الاشراف </div>
-                        <div class="d-none d-sm-block col-3 col-sm-2">تكاليف المشروع</div>
+                        <div class="col-2 col-sm-2">حساب اعمال التصميم</div>
+                        <div class="d-none d-sm-block col-2 col-sm-2">حساب اعمال الاشراف </div>
+                        <div class="d-none d-sm-block col-2 col-sm-2">تكاليف الخامات</div>
+                        <div class="d-none d-sm-block col-2 col-sm-2">تكاليف المصنعيات</div>
                         <div class="col-2 col-sm-2">الوارد المالى</div>
                         <div class="col-2 col-sm-2"> باقى الحساب</div>
                     </div>
                     <div class="text-95 text-secondary-d3">
                         <div class="row mb-2 mb-sm-0 py-25">
-                            <div class="col-3 col-sm-3">{{totaldesignworkscosts}}</div>
-                            <div class="d-none d-sm-block col-3 col-sm-2">{{totalengsupervisionworkscosts}}</div>
-                            <div class="d-none d-sm-block col-3 col-sm-2">{{total_work_cost}}</div>
+                            <div class="col-2 col-sm-2">{{totaldesignworkscosts}}</div>
+                            <div class="d-none d-sm-block col-2 col-sm-2">{{totalengsupervisionworkscosts}}</div>
+                            <div class="d-none d-sm-block col-2 col-sm-2">{{total_khamat_cost}}</div>
+                            <div class="d-none d-sm-block col-2 col-sm-2">{{total_workersreserves_cost}}</div>
                             <div class="col-2 col-sm-2">{{all_inpay_costs}}</div>
                             <div class="col-2 col-sm-2">{{charge}}</div>
 
+
                         </div>
                     </div>
+                
                 </div>
+
+                <div >  
+
+                    <div class="row text-white bgc-default-tp1 py-25">
+                        <div class="col-3 col-sm-3">  الاسم</div>
+                        <div class="d-none d-sm-block col-2 col-sm-2">  المهنة </div>
+                        <div class="d-none d-sm-block col-3 col-sm-3"> المستحق لهذا المشروع</div>
+                        <div class="d-none d-sm-block col-2 col-sm-2"> حصل على</div>
+                        <div class="col-2 col-sm-2"> الباقى</div>
+                    </div>
+                    <div class="text-95 text-secondary-d3">
+                        {% for client in workersreserves %}
+                        <div class="row mb-2 mb-sm-0 py-25">
+                            <div class="col-2 col-sm-3">{{client.0}}</div>
+                            <div class="d-none d-sm-block col2 col-sm-2">{{client.1}}</div>
+                            <div class="d-none d-sm-block col-3 col-sm-3">{{client.2}}</div>
+                            <div class="col-2 col-sm-2">{{client.3}}</div>
+                            <div class="col-2 col-sm-2">{{client.4}}</div>
+                        </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            
             </div>
         </div>
     </div>
