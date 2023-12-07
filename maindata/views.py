@@ -4,6 +4,8 @@ from django.shortcuts import render,redirect
 from django.urls import reverse
 from django.http import JsonResponse
 from django.views import View
+
+from finishcount.models import WorkerCount
 from .models import ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
 from subdata.models import EmployeeCategory ,SubCategoryDetail,CategoryDetail
 from userdata.models import Employee,User
@@ -58,16 +60,23 @@ def invoice(request, pk):
     workersreserves = []
     for inst in project_workersreserves:
         worker_data = []
+        charge = 0
+        total_directly_paid = 0
         worker = User.objects.get(id = inst['worker'])
         worker_name = worker.name
         worker_code = worker.code
         worker_job = Employee.objects.get(user = worker).category.category
-        
+        directly_paid_costs = WorkerCount.objects.filter(project = obj,worker = worker)
+        for cost in directly_paid_costs:
+            if cost.directlyarrived:
+                total_directly_paid = total_directly_paid + cost.directlyarrived 
+                
         worker_data.append(worker.name)
         worker_data.append(worker_job)
         worker_data.append(inst['total_price'])
-        worker_data.append(inst['total_paid'])
-        worker_data.append(inst['total_price'] - inst['total_paid'])
+        all_paid = inst['total_paid'] + total_directly_paid
+        worker_data.append(all_paid)
+        worker_data.append(inst['total_price'] - all_paid)
         
         
         print(worker_data)

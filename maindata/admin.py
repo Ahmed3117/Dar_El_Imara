@@ -6,6 +6,7 @@ from django.template.context_processors import csrf
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
 from django.db.models import Sum
+from finishcount.models import WorkerCount
 
 from inoutpay.models import MoneyWithDraw
 from .models import ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
@@ -13,6 +14,7 @@ from subdata.models import EmployeeCategory ,SubCategoryDetail,CategoryDetail
 from userdata.models import Employee,User
 from worksdata.models import DesignWork,EngSupervision
 from django.template.loader import render_to_string
+from finishcount.models import MarketCount, WorkerCount
 
 class UnpaidFilter(admin.SimpleListFilter):
     title = _('كشف المديونيات')
@@ -98,6 +100,16 @@ class InpayInlineAdmin(admin.TabularInline):
     extra = 1
     show_change_link = True
     # classes = ('collapse',)
+class MarketCountInlineAdmin(admin.TabularInline):
+    model = MarketCount
+    extra = 1
+    show_change_link = True
+    # classes = ('collapse',)
+class WorkerCountInlineAdmin(admin.TabularInline):
+    model = WorkerCount
+    extra = 1
+    show_change_link = True
+    # classes = ('collapse',)
     
 class ProjectAdmin(admin.ModelAdmin):
     # def get_queryset(self, request):
@@ -112,7 +124,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('is_done','project_name','client','projectinfo','details','printinvoice','date_added')
     search_fields = ('client__name','project_name','project_address')
     list_filter = ('date_added','is_done',UnpaidFilter)
-    inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin]
+    inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin,WorkerCountInlineAdmin,MarketCountInlineAdmin]
     change_list_template = 'admin/maindata/Project/change_list.html'
     autocomplete_fields = ('client',)
     # class Media:
@@ -249,16 +261,23 @@ class ProjectAdmin(admin.ModelAdmin):
         workersreserves = []
         for inst in project_workersreserves:
             worker_data = []
+            charge = 0
+            total_directly_paid = 0
             worker = User.objects.get(id = inst['worker'])
             worker_name = worker.name
             worker_code = worker.code
             worker_job = Employee.objects.get(user = worker).category.category
-            
+            directly_paid_costs = WorkerCount.objects.filter(project = obj,worker = worker)
+            for cost in directly_paid_costs:
+                if cost.directlyarrived:
+                    total_directly_paid = total_directly_paid + cost.directlyarrived 
+                    
             worker_data.append(worker.name)
             worker_data.append(worker_job)
             worker_data.append(inst['total_price'])
-            worker_data.append(inst['total_paid'])
-            worker_data.append(inst['total_price'] - inst['total_paid'])
+            all_paid = inst['total_paid'] + total_directly_paid
+            worker_data.append(all_paid)
+            worker_data.append(inst['total_price'] - all_paid)
             
             
             print(worker_data)

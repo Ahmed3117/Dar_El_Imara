@@ -33,6 +33,9 @@ INSTALLED_APPS = [
     'userdata',
     'inoutpay',
     'worksdata',
+    'finishcount',
+    'outerdeals',
+    
     # 'autocomplete_light',
 ]
 
