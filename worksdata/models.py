@@ -60,8 +60,8 @@ class EngSupervision(models.Model):
         ("percent", "نسبة"),
     )
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="المشروع")
-    account_way = models.CharField(verbose_name="نوع الحسبة", choices=accountway, max_length=10, default="mitr", blank=True)
-    ammount = models.IntegerField(verbose_name="الكمية", default=0, null=True, blank=True)
+    account_way = models.CharField(verbose_name="نوع الحسبة", choices=accountway, max_length=10, default="direct", blank=True)
+    ammount = models.IntegerField(verbose_name="الكمية", null=True, blank=True)
     date_added = models.DateTimeField(verbose_name="تاريخ الاضافة", auto_now_add=True, null=True, blank=True)
     all_costs = models.IntegerField(verbose_name=" جميع التكاليف", default=1, editable=False, null=True, blank=True)
     work_cost = models.IntegerField(verbose_name=" الحساب المستحق", default=1, editable=False, null=True, blank=True)
@@ -73,17 +73,16 @@ class EngSupervision(models.Model):
         if self.account_way == 'percent':
             khamat_costs = ProjectKhamatCosts.objects.filter(project = self.project)
             workersreserves_costs = ProjectWorkersReserves.objects.filter(project = self.project)
-            try:
-                for cost in khamat_costs:
-                    if cost.price:
-                        total_khamat_cost = total_khamat_cost + cost.price
-            
-                for cost in workersreserves_costs:
-                    if cost.price:
-                        total_workersreserves_cost = total_workersreserves_cost + cost.price 
-            except:
-                pass
-            return (total_khamat_cost + total_workersreserves_cost) * self.ammount
+
+            for cost in khamat_costs:
+                if cost.price:
+                    total_khamat_cost = total_khamat_cost + cost.price
+        
+            for cost in workersreserves_costs:
+                if cost.price:
+                    total_workersreserves_cost = total_workersreserves_cost + cost.price 
+
+            return (total_khamat_cost + total_workersreserves_cost) * self.ammount /100
         elif self.account_way == 'direct':
             return self.ammount
         else:

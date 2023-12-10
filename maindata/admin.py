@@ -11,7 +11,7 @@ from finishcount.models import WorkerCount
 from inoutpay.models import MoneyWithDraw
 from .models import ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
 from subdata.models import EmployeeCategory ,SubCategoryDetail,CategoryDetail
-from userdata.models import Employee,User
+from userdata.models import Employee, MarketSources,User
 from worksdata.models import DesignWork,EngSupervision
 from django.template.loader import render_to_string
 from finishcount.models import MarketCount, WorkerCount
@@ -214,13 +214,13 @@ class ProjectAdmin(admin.ModelAdmin):
         designworks = DesignWork.objects.filter(project = obj)
         totaldesignworkscosts = 0
         for work in designworks :
-            totaldesignworkscosts += work.work_cost
+            totaldesignworkscosts += work.workcost()
         #------------------------------------
         # حساب اعمال الاشراف 
         engsupervisionworks = EngSupervision.objects.filter(project = obj)
         totalengsupervisionworkscosts = 0
         for work in engsupervisionworks :
-            totalengsupervisionworkscosts += work.work_cost
+            totalengsupervisionworkscosts += work.workcost()
         #------------------------------------
         # تكاليف الخامات
         total_khamat_cost = 0
@@ -246,7 +246,7 @@ class ProjectAdmin(admin.ModelAdmin):
         #------------------------------------
         # باقى الحساب
         # charge =0
-        charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost + obj.discount
+        total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost + obj.discount
         #------------------------------------
         #########################################################################################
         #########################################################################################
@@ -264,25 +264,37 @@ class ProjectAdmin(admin.ModelAdmin):
             charge = 0
             total_directly_paid = 0
             worker = User.objects.get(id = inst['worker'])
-            worker_name = worker.name
-            worker_code = worker.code
             worker_job = Employee.objects.get(user = worker).category.category
             directly_paid_costs = WorkerCount.objects.filter(project = obj,worker = worker)
             for cost in directly_paid_costs:
                 if cost.directlyarrived:
                     total_directly_paid = total_directly_paid + cost.directlyarrived 
-                    
             worker_data.append(worker.name)
             worker_data.append(worker_job)
             worker_data.append(inst['total_price'])
             all_paid = inst['total_paid'] + total_directly_paid
             worker_data.append(all_paid)
             worker_data.append(inst['total_price'] - all_paid)
-            
-            
-            print(worker_data)
             workersreserves.append(worker_data)
-        print(workersreserves)
+        #----------------------------------------
+        project_markets_reserves = ProjectKhamatCosts.objects.filter(project = obj).values('market').annotate(total_price = Sum('price'),total_paid = Sum('paid'))
+        marketsreserves = []
+        for inst in project_markets_reserves:
+            market_data = []
+            charge = 0
+            total_directly_paid = 0
+            if inst['market']:
+                market = MarketSources.objects.get(id = inst['market'])
+                directly_paid_costs = MarketCount.objects.filter(project = obj,source = market)
+                for cost in directly_paid_costs:
+                    if cost.directlyarrived:
+                        total_directly_paid = total_directly_paid + cost.directlyarrived 
+                market_data.append(market.sourcemarket)
+                market_data.append(inst['total_price'])
+                all_paid = inst['total_paid'] + total_directly_paid
+                market_data.append(all_paid)
+                market_data.append(inst['total_price'] - all_paid)
+                marketsreserves.append(market_data)
 
         modal_html = render_to_string('admin/maindata/project/projectinfo.html', {
             'project_id' : project_id,
@@ -291,8 +303,9 @@ class ProjectAdmin(admin.ModelAdmin):
             'total_khamat_cost' : total_khamat_cost,
             'total_workersreserves_cost' : total_workersreserves_cost,
             'all_inpay_costs' : all_inpay_costs,
-            'charge' : int(charge),
+            'total_charge' : total_charge,
             'workersreserves' : workersreserves,
+            'marketsreserves' : marketsreserves,
         })
         return format_html(modal_html)
 

@@ -5,10 +5,10 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.views import View
 
-from finishcount.models import WorkerCount
+from finishcount.models import MarketCount, WorkerCount
 from .models import ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
 from subdata.models import EmployeeCategory ,SubCategoryDetail,CategoryDetail
-from userdata.models import Employee,User
+from userdata.models import Employee, MarketSources,User
 from worksdata.models import DesignWork,EngSupervision
 from django.db.models import Sum
 from admin_interface.models import Theme
@@ -16,17 +16,32 @@ from admin_interface.models import Theme
 def invoice(request, pk):
     obj = Project.objects.get(id = pk)
     #------------------------------------
+    # التكاليف المتوقعة
+    project_expected_costs_list = []
+    project_expected_costs = ExpectedProjectCosts.objects.filter(project = obj).values('main_category_detail').annotate(total_workers_reserves = Sum('workers_reserves_cost'),total_build_subjects = Sum('build_subjects_cost'),total_sum = Sum('workers_reserves_cost') + Sum('build_subjects_cost'))
+    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+    print(project_expected_costs)
+    for inst in project_expected_costs:
+        obj_list = []
+        main_category = CategoryDetail.objects.get(id = inst['main_category_detail']).main_category
+        obj_list.append(main_category)
+        obj_list.append(inst['total_workers_reserves'])
+        obj_list.append(inst['total_build_subjects'])
+        obj_list.append(inst['total_sum'])
+        project_expected_costs_list.append(obj_list)
+    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+    #------------------------------------
     #  حساب اعمال التصميم
     designworks = DesignWork.objects.filter(project = obj)
     totaldesignworkscosts = 0
     for work in designworks :
-        totaldesignworkscosts += work.work_cost
+        totaldesignworkscosts += work.workcost()
     #------------------------------------
     # حساب اعمال الاشراف              
     engsupervisionworks = EngSupervision.objects.filter(project = obj)
     totalengsupervisionworkscosts = 0
     for work in engsupervisionworks :
-        totalengsupervisionworkscosts += work.work_cost
+        totalengsupervisionworkscosts += work.workcost()
     #------------------------------------
     # تكاليف الخامات
     total_khamat_cost = 0
@@ -52,7 +67,7 @@ def invoice(request, pk):
     #------------------------------------
     # باقى الحساب
     # charge =0
-    charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost + obj.discount
+    total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost + obj.discount
     #------------------------------------
     client = obj.client
     #------------------------------------
@@ -83,21 +98,45 @@ def invoice(request, pk):
         workersreserves.append(worker_data)
     print(workersreserves)
     #-----------------------------------
+    #----------------------------------------
+    project_markets_reserves = ProjectKhamatCosts.objects.filter(project = obj).values('market').annotate(total_price = Sum('price'),total_paid = Sum('paid'))
+    marketsreserves = []
+    for inst in project_markets_reserves:
+        market_data = []
+        charge = 0
+        total_directly_paid = 0
+        if inst['market']:
+            market = MarketSources.objects.get(id = inst['market'])
+            directly_paid_costs = MarketCount.objects.filter(project = obj,source = market)
+            for cost in directly_paid_costs:
+                if cost.directlyarrived:
+                    total_directly_paid = total_directly_paid + cost.directlyarrived 
+            market_data.append(market.sourcemarket)
+            market_data.append(inst['total_price'])
+            all_paid = inst['total_paid'] + total_directly_paid
+            market_data.append(all_paid)
+            market_data.append(inst['total_price'] - all_paid)
+            marketsreserves.append(market_data)
+    #-----------------------------------
+    
     theme = Theme.objects.get(active = 1)
     print(theme)
     print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
     print(theme.logo.url)
     logo = theme.logo
     logo_url = logo.url
+    #-----------------------------------
     context = {
             'project_id' : pk,
+            'project_expected_costs_list' : project_expected_costs_list,
             'totaldesignworkscosts' : totaldesignworkscosts,
             'totalengsupervisionworkscosts' : totalengsupervisionworkscosts,
             'total_khamat_cost' : total_khamat_cost,
             'total_workersreserves_cost' : total_workersreserves_cost,
             'all_inpay_costs' : all_inpay_costs,
-            'charge' : int(charge),
+            'total_charge' : total_charge,
             'workersreserves' : workersreserves,
+            'marketsreserves' : marketsreserves,
             'inpaycosts' : inpaycosts,
             'designworks' : designworks,
             'engsupervisionworks' : engsupervisionworks,

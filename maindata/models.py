@@ -45,9 +45,11 @@ class ProjectKhamatCosts(models.Model):
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     who_paid = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشترى") 
     khama = models.CharField(verbose_name=" الشراء", max_length=200, null=True, blank=True)
-    market = models.ForeignKey(MarketSources, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المحل") 
+    market = models.ForeignKey(MarketSources, on_delete=models.SET_NULL,default = '', null=True,blank=True,verbose_name = "المحل") 
     price = models.IntegerField(verbose_name=" السعر",  null=True, blank=True)
     paid = models.IntegerField(verbose_name="  المدفوع",  null=True, blank=True)
+    file = models.FileField(upload_to='khamat_files/', null=True,blank=True,verbose_name = "   فاتورة ")
+
     def save(self, *args, **kwargs):
         if self.who_paid and self.paid:
             inPay.objects.create(project = self.project , paid = self.paid , 

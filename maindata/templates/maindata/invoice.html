@@ -118,7 +118,8 @@ a {
                             </a>
                         </div>
                         <div class="col-9 align-self-start d-sm-flex justify-content-end">
-                            <input type="checkbox" class="checkbox m-2" checked id="checkbox1">اجمالى المشروع
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox0"> اجمالى المشروع 
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox1"> تكاليف متوقعة
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox2">مستحقات العاملين
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox3">الوارد المالى
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox4"> اعمال التصميم
@@ -170,6 +171,9 @@ a {
                         
                         
                             <div >
+
+                                    
+
                                     <div class="box" id="box1">  
                                         <div class="row text-white bgc-default-tp1 ">
                                             
@@ -189,14 +193,44 @@ a {
                                                 <div class="d-none d-sm-block col-1 col-sm-1">{{total_khamat_cost}}</div>
                                                 <div class="d-none d-sm-block col-1 col-sm-1">{{total_workersreserves_cost}}</div>
                                                 <div class="col-2 col-sm-2">{{all_inpay_costs}}</div>
-                                                <div class="col-2 col-sm-2">{{charge}}</div>
+                                                <div class="col-2 col-sm-2">{{total_charge}}</div>
                     
                     
                                             </div>
                                         </div>
                                     
                                     </div>
-                    
+
+                                    <div class="box" id="box0">  
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606"> التكاليف المتوقعة (مج)</div>
+                                            <div class="col-3 col-sm-3"> العمل</div>
+                                            <div class="d-none d-sm-block col-2 col-sm-2">  مصنعيات </div>
+                                            <div class="d-none d-sm-block col-1 col-sm-1"> خامات</div>
+                                            <div class="d-none d-sm-block col-1 col-sm-1"> المجموع الكلى</div>
+                                            
+                                        </div>
+                                        {% for main_category_cost in project_expected_costs_list %}
+                                            <div class="row mb-2 mb-sm-0 py-25">
+                                                <div class="col-2 col-sm-2"></div>
+                                                <div class="col-3 col-sm-3">{{main_category_cost.0}}</div>
+                                                <div class="d-none d-sm-block col2 col-sm-2">{{main_category_cost.1}}</div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">{{main_category_cost.2}}</div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">{{main_category_cost.3}}</div>
+
+                                            </div>
+                                            {% empty %}
+                                            <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                            
+                                        {% endfor %}
+                                    
+                                    </div>
+
                                     <div class="box" id="box2">  
                                         
                                         <div class="row text-white bgc-default-tp1 ">
@@ -217,6 +251,37 @@ a {
                                                     <div class="d-none d-sm-block col-2 col-sm-2">{{client.2}}</div>
                                                     <div class="col-2 col-sm-2">{{client.3}}</div>
                                                     <div class="col-2 col-sm-2">{{client.4}}</div>
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                
+                                                {% endfor %}
+                        
+                                            </div>
+                                    </div>
+
+                                    <div class="box" id="box6">  
+                                        
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606"> مستحقات الموردين (مج)</div>
+                                                <div class="col-2 col-sm-2">  المورد</div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> المستحق </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> حصل على</div>
+                                                <div class="col-2 col-sm-2"> الباقى</div>
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for market in marketsreserves %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    <div class="col-2 col-sm-2">{{market.0}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{market.1}}</div>
+                                                    <div class="col-2 col-sm-2">{{market.2}}</div>
+                                                    <div class="col-2 col-sm-2">{{market.3}}</div>
                                                 </div>
                                                 {% empty %}
                                                 <div class="row mb-2 mb-sm-0 py-25">
@@ -276,7 +341,16 @@ a {
                                                 <div class="row mb-2 mb-sm-0 py-25">
                                                     <div class="col-2 col-sm-2"></div>
                                                     <div class="col-2 col-sm-2">{{designwork.worktype.type}}</div>
-                                                    <div class="d-none d-sm-block col-3 col-sm-3">{{designwork.account_way}}</div>
+                                                    {% if designwork.account_way == 'mitr' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">بالمتر</div>
+                                                    {% endif %}
+                                                    {% if designwork.account_way == 'unit' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">بالوحدة</div>
+                                                    {% endif %}
+                                                    {% if designwork.account_way == 'direct' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">مقطعية</div>
+                                                    {% endif %}
+                                                    
                                                     <div class="d-none d-sm-block col-3 col-sm-3">{{designwork.ammount}}</div>
                                                     <div class="d-none d-sm-block col-2 col-sm-2">{{designwork.workcost}}</div>
                                                 </div>
@@ -306,9 +380,14 @@ a {
                                                 <div class="row mb-2 mb-sm-0 py-25">
                                                     <div class="col-2 col-sm-2"></div>
                                                     <div class="col-3 col-sm-3">{{engsupervisionwork.all_costs}}</div>
-                                                    <div class="d-none d-sm-block col-3 col-sm-3">{{engsupervisionwork.account_way}}</div>
+                                                    {% if engsupervisionwork.account_way == 'percent' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">نسبة</div>
+                                                    {% endif %}
+                                                    {% if engsupervisionwork.account_way == 'direct' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">مقطعية</div>
+                                                    {% endif %}
                                                     <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.ammount}}</div>
-                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.work_cost}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.workcost}}</div>
                                                 </div>
                                                 {% empty %}
                                                 <div class="row mb-2 mb-sm-0 py-25">
@@ -320,8 +399,6 @@ a {
                         
                                             </div>
                                     </div>
-
-
 
                                     <div class="row" style="background-color: #10626F;">
                                             <div class="col align-self-start d-sm-flex justify-content-start">

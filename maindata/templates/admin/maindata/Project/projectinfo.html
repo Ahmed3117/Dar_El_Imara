@@ -14,24 +14,26 @@
             
             <div class="modal-body" >
                 
-                <div >  
-                    <div class="row text-white bgc-default-tp1 py-25">
+                <div class="box" id="box1">  
+                    <div class="row text-white bgc-default-tp1 ">
                         
-                        <div class="col-2 col-sm-2">حساب اعمال التصميم</div>
-                        <div class="d-none d-sm-block col-2 col-sm-2">حساب اعمال الاشراف </div>
-                        <div class="d-none d-sm-block col-2 col-sm-2">تكاليف الخامات</div>
-                        <div class="d-none d-sm-block col-2 col-sm-2">تكاليف المصنعيات</div>
+                        <div class="col-2 col-sm-2" style="background-color: #d87606">اجمالى المشروع (مج)</div>
+                        <div class="col-2 col-sm-2"> اعمال التصميم</div>
+                        <div class="d-none d-sm-block col-2 col-sm-2"> اعمال الاشراف </div>
+                        <div class="d-none d-sm-block col-1 col-sm-1"> الخامات</div>
+                        <div class="d-none d-sm-block col-1 col-sm-1"> المصنعيات</div>
                         <div class="col-2 col-sm-2">الوارد المالى</div>
                         <div class="col-2 col-sm-2"> باقى الحساب</div>
                     </div>
                     <div class="text-95 text-secondary-d3">
                         <div class="row mb-2 mb-sm-0 py-25">
+                            <div class="col-2 col-sm-2"></div>
                             <div class="col-2 col-sm-2">{{totaldesignworkscosts}}</div>
                             <div class="d-none d-sm-block col-2 col-sm-2">{{totalengsupervisionworkscosts}}</div>
-                            <div class="d-none d-sm-block col-2 col-sm-2">{{total_khamat_cost}}</div>
-                            <div class="d-none d-sm-block col-2 col-sm-2">{{total_workersreserves_cost}}</div>
+                            <div class="d-none d-sm-block col-1 col-sm-1">{{total_khamat_cost}}</div>
+                            <div class="d-none d-sm-block col-1 col-sm-1">{{total_workersreserves_cost}}</div>
                             <div class="col-2 col-sm-2">{{all_inpay_costs}}</div>
-                            <div class="col-2 col-sm-2">{{charge}}</div>
+                            <div class="col-2 col-sm-2">{{total_charge}}</div>
 
 
                         </div>
@@ -39,27 +41,68 @@
                 
                 </div>
 
-                <div >  
-
-                    <div class="row text-white bgc-default-tp1 py-25">
-                        <div class="col-3 col-sm-3">  الاسم</div>
-                        <div class="d-none d-sm-block col-2 col-sm-2">  المهنة </div>
-                        <div class="d-none d-sm-block col-3 col-sm-3"> المستحق لهذا المشروع</div>
-                        <div class="d-none d-sm-block col-2 col-sm-2"> حصل على</div>
-                        <div class="col-2 col-sm-2"> الباقى</div>
-                    </div>
-                    <div class="text-95 text-secondary-d3">
-                        {% for client in workersreserves %}
-                        <div class="row mb-2 mb-sm-0 py-25">
-                            <div class="col-2 col-sm-3">{{client.0}}</div>
-                            <div class="d-none d-sm-block col2 col-sm-2">{{client.1}}</div>
-                            <div class="d-none d-sm-block col-3 col-sm-3">{{client.2}}</div>
-                            <div class="col-2 col-sm-2">{{client.3}}</div>
-                            <div class="col-2 col-sm-2">{{client.4}}</div>
+                <div>  
+                                        
+                    <div class="row text-white bgc-default-tp1 ">
+                        
+                        <div class="col-2 col-sm-2" style="background-color: #d87606"> مستحقات العاملين (مج)</div>
+                            <div class="col-2 col-sm-2">  العامل</div>
+                            <div class="d-none d-sm-block col-2 col-sm-2">  المهنة </div>
+                            <div class="d-none d-sm-block col-2 col-sm-2"> المستحق </div>
+                            <div class="d-none d-sm-block col-2 col-sm-2"> حصل على</div>
+                            <div class="col-2 col-sm-2"> الباقى</div>
                         </div>
-                        {% endfor %}
+                        <div class="text-95 text-secondary-d3">
+                            {% for client in workersreserves %}
+                            <div class="row mb-2 mb-sm-0 py-25">
+                                <div class="col-2 col-sm-2"></div>
+                                <div class="col-2 col-sm-2">{{client.0}}</div>
+                                <div class="d-none d-sm-block col2 col-sm-2">{{client.1}}</div>
+                                <div class="d-none d-sm-block col-2 col-sm-2">{{client.2}}</div>
+                                <div class="col-2 col-sm-2">{{client.3}}</div>
+                                <div class="col-2 col-sm-2">{{client.4}}</div>
+                            </div>
+                            {% empty %}
+                            <div class="row mb-2 mb-sm-0 py-25">
+                            <span style="color:red; text-align:center;">
+                                لا يوجد    
+                            </span>
+                        </div>
+                            
+                            {% endfor %}
+    
+                        </div>
+                </div>
 
-                    </div>
+                <div >  
+                                        
+                    <div class="row text-white bgc-default-tp1 ">
+                        
+                        <div class="col-2 col-sm-2" style="background-color: #d87606"> مستحقات الموردين (مج)</div>
+                            <div class="col-2 col-sm-2">  المورد</div>
+                            <div class="d-none d-sm-block col-2 col-sm-2"> المستحق </div>
+                            <div class="d-none d-sm-block col-2 col-sm-2"> حصل على</div>
+                            <div class="col-2 col-sm-2"> الباقى</div>
+                        </div>
+                        <div class="text-95 text-secondary-d3">
+                            {% for market in marketsreserves %}
+                            <div class="row mb-2 mb-sm-0 py-25">
+                                <div class="col-2 col-sm-2"></div>
+                                <div class="col-2 col-sm-2">{{market.0}}</div>
+                                <div class="d-none d-sm-block col-2 col-sm-2">{{market.1}}</div>
+                                <div class="col-2 col-sm-2">{{market.2}}</div>
+                                <div class="col-2 col-sm-2">{{market.3}}</div>
+                            </div>
+                            {% empty %}
+                            <div class="row mb-2 mb-sm-0 py-25">
+                            <span style="color:red; text-align:center;">
+                                لا يوجد    
+                            </span>
+                        </div>
+                            
+                            {% endfor %}
+    
+                        </div>
                 </div>
             
             </div>
