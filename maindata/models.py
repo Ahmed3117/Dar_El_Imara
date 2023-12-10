@@ -14,7 +14,7 @@ class inPay(models.Model):
     recipient = models.ForeignKey(User, on_delete=models.SET_NULL,verbose_name="المستلم",related_name='recipant', blank=True,null=True)
     date_added = models.DateTimeField(verbose_name = " تاريخ الاضافة",auto_now_add=True,null=True,blank=True) 
     file = models.FileField(upload_to='inpay_files/', null=True,blank=True,verbose_name = "   فاتورة ")
-
+    notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     def __str__(self) :
         return str(self.paid)
     class Meta:
@@ -30,7 +30,8 @@ class ExpectedProjectCosts(models.Model):
     workers_reserves_cost = models.IntegerField(verbose_name=" تكلفة المصنعيات",  null=True, blank=True)
     build_subjects = models.CharField(verbose_name=" تفاصيل الخامات", max_length=200, null=True, blank=True)
     build_subjects_cost = models.IntegerField(verbose_name=" تكلفة الخامات",  null=True, blank=True)
-
+    file = models.FileField(upload_to='expectedcostsfiles/', null=True,blank=True,verbose_name = "   ملف ")
+    notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     def __str__(self) :
         return str(self.project.project_name)
 
@@ -44,12 +45,12 @@ class ProjectKhamatCosts(models.Model):
     sub_category_detail = models.ForeignKey(SubCategoryDetail, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند فرعى")
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     who_paid = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشترى") 
-    khama = models.CharField(verbose_name=" الشراء", max_length=200, null=True, blank=True)
+    khama = models.CharField(verbose_name=" التوصيف", max_length=200, null=True, blank=True)
     market = models.ForeignKey(MarketSources, on_delete=models.SET_NULL,default = '', null=True,blank=True,verbose_name = "المحل") 
     price = models.IntegerField(verbose_name=" السعر",  null=True, blank=True)
     paid = models.IntegerField(verbose_name="  المدفوع",  null=True, blank=True)
     file = models.FileField(upload_to='khamat_files/', null=True,blank=True,verbose_name = "   فاتورة ")
-
+    notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     def save(self, *args, **kwargs):
         if self.who_paid and self.paid:
             inPay.objects.create(project = self.project , paid = self.paid , 
@@ -73,7 +74,8 @@ class ProjectWorkersReserves(models.Model):
     work = models.CharField(verbose_name=" العمل", max_length=200, null=True, blank=True)
     price = models.IntegerField(verbose_name="  التكلفة المستحقة",  null=True, blank=True)
     paid = models.IntegerField(verbose_name="  المدفوع",  null=True, blank=True)
-
+    file = models.FileField(upload_to='files/', null=True,blank=True,verbose_name = "   ملف ")
+    notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     def charge(self):
         return self.price - self.paid
     def __str__(self) :
@@ -105,7 +107,7 @@ class Project(models.Model):
     discount = models.IntegerField(verbose_name = "الخصم",default = 0 ,null=True,blank=True)
     date_added = models.DateTimeField(verbose_name = " تاريخ الانشاء",auto_now_add=True,null=True,blank=True) 
     is_done = models.BooleanField(verbose_name = "  المشروع منتهى",default=False)
-
+    notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     class Meta:
         verbose_name_plural = 'المشاريع'
         verbose_name = 'مشروع'
