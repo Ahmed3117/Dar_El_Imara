@@ -10,7 +10,17 @@
 
 
 <script>
+var all_note_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-notes"]');
+for (var i = 0; i < all_note_elements.length; i++) {
+  
+    all_note_elements[i].disabled = true;
+  
+}
+
+
+
 var all_select_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-main_category_detail"]');
+
 var new_select_element = all_select_elements[all_select_elements.length - 1];
 
 var last_select_element = all_select_elements[all_select_elements.length - 2];
