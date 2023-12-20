@@ -15,6 +15,8 @@
  * Licensed under the New BSD License
  * See: https://opensource.org/licenses/bsd-license.php
  */
+
+
 'use strict';
 {
     const $ = django.jQuery;
@@ -353,6 +355,22 @@
                 selector = inlineOptions.name + "-group .tabular.inline-related tbody:first > tr.form-row";
                 $(selector).tabularFormset(selector, inlineOptions.options);
                 break;
+            
+            
+                    var all_select_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-main_category_detail"]');
+                    var new_select_element = all_select_elements[all_select_elements.length - 1];
+                    var last_select_element = all_select_elements[all_select_elements.length - 2];
+            
+                    for (var i = 0; i < last_select_element.options.length; i++) {
+                        if (last_select_element.options[i].selected) {
+                            var new_option = document.createElement("option");
+                            new_option.value = last_select_element.options[i].value;
+                            new_option.text = last_select_element.options[i].text;
+                            new_select_element.appendChild(new_option);
+                            new_option.selected = true;
+                        }
+                    }
+                
             }
         });
     });

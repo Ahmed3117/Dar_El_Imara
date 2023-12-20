@@ -60,32 +60,32 @@ class ProjectWorkersReservesAdmin(admin.ModelAdmin):
     
 class DesignWorkInlineAdmin(admin.TabularInline):
     model = DesignWork
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
 
 class EngSupervisionInlineAdmin(admin.TabularInline):
     model = EngSupervision
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
 
 class ExpectedProjectCostsInlineAdmin(admin.TabularInline):
     model = ExpectedProjectCosts
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
     
 class ProjectKhamatCostsInlineAdmin(admin.TabularInline):
     model = ProjectKhamatCosts
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
     autocomplete_fields = ('who_paid',)
 
 class ProjectWorkersReservesInlineAdmin(admin.TabularInline):
     model = ProjectWorkersReserves
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
 
@@ -97,17 +97,17 @@ class inPayAdmin(admin.ModelAdmin):
 
 class InpayInlineAdmin(admin.TabularInline):
     model = inPay
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
 class MarketCountInlineAdmin(admin.TabularInline):
     model = MarketCount
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
 class WorkerCountInlineAdmin(admin.TabularInline):
     model = WorkerCount
-    extra = 1
+    extra = 0
     show_change_link = True
     # classes = ('collapse',)
     

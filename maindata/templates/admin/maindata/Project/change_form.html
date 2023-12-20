@@ -1,27 +1,261 @@
 {% extends "admin/change_form.html" %}
+{% load static %}
 
-{% block content %}
+{% block admin_change_form_document_ready %}
     {{ block.super }}
     <style>
-        .column-sub_category_detail{
-            max-width:50%;
+        .column-sub_category_detail {
+            max-width: 50%;
         }
     </style>
+
+    <script src="{% static 'js/jquery.js' %}"></script>
+
+
     <script>
-        function showCategoryWorkers(event) {
-            var rowId = event.target.id.split('-')[1];
-            var type = this.value;
+        //var all_note_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-notes"]');
+        //for (var i = 0; i < all_note_elements.length; i++) {
+          
+           // all_note_elements[i].disabled = true;
+          
+        //}
+        
+
+        // "expectedprojectcosts" "make select buttons of new raw take the same values of the previous one"
+
+        $(document).on('formset:added', function(event, $row, formsetName) {
+                var all_expectedprojectcosts_main_category_select_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-main_category_detail"]');
+                var new_expectedprojectcosts_main_category_select_element = all_expectedprojectcosts_main_category_select_elements[all_expectedprojectcosts_main_category_select_elements.length - 2];
+                var last_expectedprojectcosts_main_category_select_element = all_expectedprojectcosts_main_category_select_elements[all_expectedprojectcosts_main_category_select_elements.length - 3];
+                new_expectedprojectcosts_main_category_select_element.value = last_expectedprojectcosts_main_category_select_element.value
+                //new_expectedprojectcosts_main_category_select_element = last_expectedprojectcosts_main_category_select_element
+                for (var i = 0; i < last_expectedprojectcosts_main_category_select_element.options.length; i++) {
+                    if (last_expectedprojectcosts_main_category_select_element.options[i].selected) {
+                        new_expectedprojectcosts_main_category_select_element.options[i].selected = true;
+                    }
+                }
+
+
+
+                var CurrentSelectIdexpectedprojectcosts = new_expectedprojectcosts_main_category_select_element.id.split('-')[1];
+                var CurrentTypeexpectedprojectcosts = new_expectedprojectcosts_main_category_select_element.value;
+                var id_sub_category_detail_expectedprojectcosts = document.getElementById('id_expectedprojectcosts_set-' + CurrentSelectIdexpectedprojectcosts + '-sub_category_detail');
+                //var initialValue = document.getElementById('id_expectedprojectcosts_set-' + CurrentSelectIdexpectedprojectcosts + '-sub_category_detail').value;
+                
+                fetch('/get_category_subs/?category=' + CurrentTypeexpectedprojectcosts)
+                    .then(response => response.json())
+                    .then(data => {
+                        //Clear the category select menu
+                        id_sub_category_detail_expectedprojectcosts.innerHTML = '';
+    
+                        // Add the new options to the category select menu
+                        data.forEach(function (item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.sub_category;
+                            id_sub_category_detail_expectedprojectcosts.appendChild(option);
+                            //id_sub_category_detail_expectedprojectcosts.value = initialValue;
+
+
+
+                            var all_expectedprojectcosts_sub_category_select_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-sub_category_detail"]');
+                            var new_expectedprojectcosts_sub_category_select_element = all_expectedprojectcosts_sub_category_select_elements[all_expectedprojectcosts_sub_category_select_elements.length - 2];
+                            var last_expectedprojectcosts_sub_category_select_element = all_expectedprojectcosts_sub_category_select_elements[all_expectedprojectcosts_sub_category_select_elements.length - 3];
+                            new_expectedprojectcosts_sub_category_select_element.value = last_expectedprojectcosts_sub_category_select_element.value
+            
+                            //new_expectedprojectcosts_sub_category_select_element = last_expectedprojectcosts_sub_category_select_element
+                            for (var i = 0; i < last_expectedprojectcosts_sub_category_select_element.options.length; i++) {
+                                if (last_expectedprojectcosts_sub_category_select_element.options[i].selected) {
+                                    var desiredValue = last_expectedprojectcosts_sub_category_select_element.options[i].value;
+                                    for (var i = 0; i < new_expectedprojectcosts_sub_category_select_element.options.length; i++) {
+                                        //last_expectedprojectcosts_sub_category_select_element.options[i].value
+                                        if (new_expectedprojectcosts_sub_category_select_element.options[i].value === desiredValue) {
+                                            new_expectedprojectcosts_sub_category_select_element.options[i].selected = true;
+                                            console.log('uuuuuuuuu')
+                                            console.log(new_expectedprojectcosts_sub_category_select_element.options[i])
+            
+                                            console.log(new_expectedprojectcosts_sub_category_select_element.options[i].text)
+                                            console.log('uuuuuuuuu')
+                                            
+                                            
+                                            break;
+                                        }
+                                        //new_expectedprojectcosts_sub_category_select_element.options[i].selected = true;
+                                    } 
+                                    
+                                }
+                            }
+
+                        });
+                }); 
+
+
+
+
+
+
+                var all_projectkhamatcosts_main_category_select_elements = document.querySelectorAll('[id^="id_projectkhamatcosts_set-"][id*="-main_category_detail"]');
+                var new_projectkhamatcosts_main_category_select_element = all_projectkhamatcosts_main_category_select_elements[all_projectkhamatcosts_main_category_select_elements.length - 2];
+                var last_projectkhamatcosts_main_category_select_element = all_projectkhamatcosts_main_category_select_elements[all_projectkhamatcosts_main_category_select_elements.length - 3];
+                new_projectkhamatcosts_main_category_select_element.value = last_projectkhamatcosts_main_category_select_element.value
+                //new_projectkhamatcosts_main_category_select_element = last_projectkhamatcosts_main_category_select_element
+                for (var i = 0; i < last_projectkhamatcosts_main_category_select_element.options.length; i++) {
+                    if (last_projectkhamatcosts_main_category_select_element.options[i].selected) {
+                        new_projectkhamatcosts_main_category_select_element.options[i].selected = true;
+                    }
+                }
+
+
+                var CurrentSelectIdprojectkhamatcosts = new_projectkhamatcosts_main_category_select_element.id.split('-')[1];
+                var CurrentTypeprojectkhamatcosts = new_projectkhamatcosts_main_category_select_element.value;
+                var id_sub_category_detail_projectkhamatcosts = document.getElementById('id_projectkhamatcosts_set-' + CurrentSelectIdprojectkhamatcosts + '-sub_category_detail');
+                //var initialValue = document.getElementById('id_projectkhamatcosts_set-' + CurrentSelectIdprojectkhamatcosts + '-sub_category_detail').value;
+                
+                fetch('/get_category_subs/?category=' + CurrentTypeprojectkhamatcosts)
+                    .then(response => response.json())
+                    .then(data => {
+                        //Clear the category select menu
+                        id_sub_category_detail_projectkhamatcosts.innerHTML = '';
+    
+                        // Add the new options to the category select menu
+                        data.forEach(function (item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.sub_category;
+                            id_sub_category_detail_projectkhamatcosts.appendChild(option);
+                            //id_sub_category_detail_projectkhamatcosts.value = initialValue;
+
+
+
+                            var all_projectkhamatcosts_sub_category_select_elements = document.querySelectorAll('[id^="id_projectkhamatcosts_set-"][id*="-sub_category_detail"]');
+                            var new_projectkhamatcosts_sub_category_select_element = all_projectkhamatcosts_sub_category_select_elements[all_projectkhamatcosts_sub_category_select_elements.length - 2];
+                            var last_projectkhamatcosts_sub_category_select_element = all_projectkhamatcosts_sub_category_select_elements[all_projectkhamatcosts_sub_category_select_elements.length - 3];
+                            new_projectkhamatcosts_sub_category_select_element.value = last_projectkhamatcosts_sub_category_select_element.value
+            
+                            //new_projectkhamatcosts_sub_category_select_element = last_projectkhamatcosts_sub_category_select_element
+                            for (var i = 0; i < last_projectkhamatcosts_sub_category_select_element.options.length; i++) {
+                                if (last_projectkhamatcosts_sub_category_select_element.options[i].selected) {
+                                    var desiredValue = last_projectkhamatcosts_sub_category_select_element.options[i].value;
+                                    for (var i = 0; i < new_projectkhamatcosts_sub_category_select_element.options.length; i++) {
+                                        //last_projectkhamatcosts_sub_category_select_element.options[i].value
+                                        if (new_projectkhamatcosts_sub_category_select_element.options[i].value === desiredValue) {
+                                            new_projectkhamatcosts_sub_category_select_element.options[i].selected = true;
+                                            console.log('uuuuuuuuu')
+                                            console.log(new_projectkhamatcosts_sub_category_select_element.options[i])
+            
+                                            console.log(new_projectkhamatcosts_sub_category_select_element.options[i].text)
+                                            console.log('uuuuuuuuu')
+                                            
+                                            
+                                            break;
+                                        }
+                                        //new_projectkhamatcosts_sub_category_select_element.options[i].selected = true;
+                                    } 
+                                    
+                                }
+                            }
+
+
+
+                        });
+                }); 
+
+
+
+
+
+                var all_projectworkersreserves_main_category_select_elements = document.querySelectorAll('[id^="id_projectworkersreserves_set-"][id*="-main_category_detail"]');
+                var new_projectworkersreserves_main_category_select_element = all_projectworkersreserves_main_category_select_elements[all_projectworkersreserves_main_category_select_elements.length - 2];
+                var last_projectworkersreserves_main_category_select_element = all_projectworkersreserves_main_category_select_elements[all_projectworkersreserves_main_category_select_elements.length - 3];
+                new_projectworkersreserves_main_category_select_element.value = last_projectworkersreserves_main_category_select_element.value
+                //new_projectworkersreserves_main_category_select_element = last_projectworkersreserves_main_category_select_element
+                for (var i = 0; i < last_projectworkersreserves_main_category_select_element.options.length; i++) {
+                    if (last_projectworkersreserves_main_category_select_element.options[i].selected) {
+                        new_projectworkersreserves_main_category_select_element.options[i].selected = true;
+                    }
+                }
+
+
+                var CurrentSelectIdprojectworkersreserves = new_projectworkersreserves_main_category_select_element.id.split('-')[1];
+                var CurrentTypeprojectworkersreserves = new_projectworkersreserves_main_category_select_element.value;
+                var id_sub_category_detail_projectworkersreserves = document.getElementById('id_projectworkersreserves_set-' + CurrentSelectIdprojectworkersreserves + '-sub_category_detail');
+                //var initialValue = document.getElementById('id_projectworkersreserves_set-' + CurrentSelectIdprojectworkersreserves + '-sub_category_detail').value;
+                
+                fetch('/get_category_subs/?category=' + CurrentTypeprojectworkersreserves)
+                    .then(response => response.json())
+                    .then(data => {
+                        //Clear the category select menu
+                        id_sub_category_detail_projectworkersreserves.innerHTML = '';
+    
+                        // Add the new options to the category select menu
+                        data.forEach(function (item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.sub_category;
+                            id_sub_category_detail_projectworkersreserves.appendChild(option);
+                            //id_sub_category_detail_projectworkersreserves.value = initialValue;
+
+
+
+                            var all_projectworkersreserves_sub_category_select_elements = document.querySelectorAll('[id^="id_projectworkersreserves_set-"][id*="-sub_category_detail"]');
+                            var new_projectworkersreserves_sub_category_select_element = all_projectworkersreserves_sub_category_select_elements[all_projectworkersreserves_sub_category_select_elements.length - 2];
+                            var last_projectworkersreserves_sub_category_select_element = all_projectworkersreserves_sub_category_select_elements[all_projectworkersreserves_sub_category_select_elements.length - 3];
+                            new_projectworkersreserves_sub_category_select_element.value = last_projectworkersreserves_sub_category_select_element.value
+            
+                            //new_projectworkersreserves_sub_category_select_element = last_projectworkersreserves_sub_category_select_element
+                            for (var i = 0; i < last_projectworkersreserves_sub_category_select_element.options.length; i++) {
+                                if (last_projectworkersreserves_sub_category_select_element.options[i].selected) {
+                                    var desiredValue = last_projectworkersreserves_sub_category_select_element.options[i].value;
+                                    for (var i = 0; i < new_projectworkersreserves_sub_category_select_element.options.length; i++) {
+                                        //last_projectworkersreserves_sub_category_select_element.options[i].value
+                                        if (new_projectworkersreserves_sub_category_select_element.options[i].value === desiredValue) {
+                                            new_projectworkersreserves_sub_category_select_element.options[i].selected = true;
+                                            console.log('uuuuuuuuu')
+                                            console.log(new_projectworkersreserves_sub_category_select_element.options[i])
+            
+                                            console.log(new_projectworkersreserves_sub_category_select_element.options[i].text)
+                                            console.log('uuuuuuuuu')
+                                            
+                                            
+                                            break;
+                                        }
+                                        //new_projectworkersreserves_sub_category_select_element.options[i].selected = true;
+                                    } 
+                                    
+                                }
+                            }
+
+
+
+                        });
+                }); 
+
+
+
+
+
+
+        });
+
+        //end "projectkhamatcosts" "make select buttons of new raw take the same values of the previous one"
+
+    </script> 
+
+
+
+
+
+
+    <script>
+        function showCategorySubs(rowId, type, subCategoryDetailId) {
             if (type) {
-                var id_sub_category_detail = document.getElementById('id_expectedprojectcosts_set-' + rowId + '-sub_category_detail');
+                var id_sub_category_detail = document.getElementById(subCategoryDetailId);
                 fetch('/get_category_subs/?category=' + type)
                     .then(response => response.json())
                     .then(data => {
-                        var initialValue = document.getElementById('id_expectedprojectcosts_set-' + rowId + '-sub_category_detail').value;
-    
-                        // Clear the category select menu
+                        var initialValue = id_sub_category_detail.value;
                         id_sub_category_detail.innerHTML = '';
-    
-                        // Add the new options to the category select menu
+
                         data.forEach(function (item) {
                             var option = document.createElement('option');
                             option.value = item.id;
@@ -32,112 +266,43 @@
                     });
             }
         }
-    
-        // Attach event listener to a common parent element using event delegation
-        document.body.addEventListener('change', function (event) {
-            var targetId = event.target.id;
-    
-            if (targetId && targetId.includes('-main_category_detail')) {
-                showCategoryWorkers.call(event.target, event);
-            }
-        });
-    
-        // Trigger the event for existing elements
-        var selectElements = document.querySelectorAll('[id*="id_expectedprojectcosts_set-"][id*="-main_category_detail"]');
-        selectElements.forEach(function (ele) {
-            showCategoryWorkers.call(ele, { target: ele });
-        });
-    
-        function showSubCategories(event) {
-            console.log('llllllllllll');
-    
-            var rowId = event.target.id.split('-')[1];
-            var type = this.value;
-    
-            if (type) {
-                var id_sub_category_detail = document.getElementById('id_projectkhamatcosts_set-' + rowId + '-sub_category_detail');
-    
-                fetch('/get_category_subs/?category=' + type)
-                    .then(response => response.json())
-                    .then(data => {
-                        var initialValue = document.getElementById('id_projectkhamatcosts_set-' + rowId + '-sub_category_detail').value;
-                        // Clear the category select menu
-                        id_sub_category_detail.innerHTML = '';
-    
-                        // Add the new options to the category select menu
-                        data.forEach(function (item) {
-                            var option = document.createElement('option');
-                            option.value = item.id;
-                            option.text = item.sub_category;
-                            id_sub_category_detail.appendChild(option);
-                            id_sub_category_detail.value = initialValue;
-                        });
-                    });
-            }
+
+        function setupCategorySubsListeners(prefix) {
+            document.body.addEventListener('change', function (event) {
+                var targetId = event.target.id;
+
+                if (targetId && targetId.includes('-main_category_detail')  && targetId.includes(prefix) ) {
+                    var rowId = targetId.split('-')[1];
+                    var type = event.target.value;
+                    var subCategoryDetailId = prefix + '-' + rowId + '-sub_category_detail';
+                    
+                    showCategorySubs(rowId, type, subCategoryDetailId);
+                }
+            });
+
+            // Trigger the event for existing elements
+            var selectElements = document.querySelectorAll('[id^="' + prefix + '-"][id$="-main_category_detail"]');
+            selectElements.forEach(function (ele) {
+                var rowId = ele.id.split('-')[1];
+                var type = ele.value;
+                var subCategoryDetailId = prefix + '-' + rowId + '-sub_category_detail';
+
+                showCategorySubs(rowId, type, subCategoryDetailId);
+            });
         }
-    
-        // Attach event listener to a common parent element using event delegation
-        document.body.addEventListener('change', function (event) {
-            var targetId = event.target.id;
-    
-            if (targetId && targetId.includes('-main_category_detail')) {
-                showSubCategories.call(event.target, event);
-            }
-        });
-    
-        // Trigger the event for existing elements
-        var selectElements = document.querySelectorAll('[id*="id_projectkhamatcosts_set-"][id*="-main_category_detail"]');
-        selectElements.forEach(function (ele) {
-            showSubCategories.call(ele, { target: ele });
-        });
 
 
-        function showSubCategoriesforWorkersReserves(event) {
-            console.log('llllllllllll');
-    
-            var rowId = event.target.id.split('-')[1];
-            var type = this.value;
-    
-            if (type) {
-                var id_sub_category_detail = document.getElementById('id_projectworkersreserves_set-' + rowId + '-sub_category_detail');
-    
-                fetch('/get_category_subs/?category=' + type)
-                    .then(response => response.json())
-                    .then(data => {
-                        var initialValue = document.getElementById('id_projectworkersreserves_set-' + rowId + '-sub_category_detail').value;
-                        // Clear the category select menu
-                        id_sub_category_detail.innerHTML = '';
-    
-                        // Add the new options to the category select menu
-                        data.forEach(function (item) {
-                            var option = document.createElement('option');
-                            option.value = item.id;
-                            option.text = item.sub_category;
-                            id_sub_category_detail.appendChild(option);
-                            id_sub_category_detail.value = initialValue;
-                        });
-                    });
-            }
-        }
-    
-        // Attach event listener to a common parent element using event delegation
-        document.body.addEventListener('change', function (event) {
-            var targetId = event.target.id;
-    
-            if (targetId && targetId.includes('-main_category_detail')) {
-                showSubCategoriesforWorkersReserves.call(event.target, event);
-            }
-        });
-    
-        // Trigger the event for existing elements
-        var selectElements = document.querySelectorAll('[id*="id_projectworkersreserves_set-"][id*="-main_category_detail"]');
-        selectElements.forEach(function (ele) {
-            showSubCategories.call(ele, { target: ele });
-        });
-
-
-
+        /////////////////////////////////////////////////////////////////////////////
 
         
+
+        setupCategorySubsListeners('id_expectedprojectcosts_set');
+        setupCategorySubsListeners('id_projectkhamatcosts_set');
+        setupCategorySubsListeners('id_projectworkersreserves_set');
+
+
+
+
+
     </script>
 {% endblock %}

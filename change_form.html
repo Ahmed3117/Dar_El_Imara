@@ -1,88 +1,209 @@
 {% extends "admin/change_form.html" %}
-
-{% block content %}
-    {{ block.super }}
+{% load static %}
+{% block admin_change_form_document_ready %}
+{{ block.super }}
     <style>
         .column-sub_category_detail{
             max-width:50%;
         }
     </style>
 
+    <script src="{% static 'js/jquery.js' %}"></script> 
 
-<script>
-var all_note_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-notes"]');
-for (var i = 0; i < all_note_elements.length; i++) {
-  
-    all_note_elements[i].disabled = true;
-  
-}
+    
+    <script>
+        //var all_note_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-notes"]');
+        //for (var i = 0; i < all_note_elements.length; i++) {
+          
+           // all_note_elements[i].disabled = true;
+          
+        //}
+        
+
+        // "expectedprojectcosts" "make select buttons of new raw take the same values of the previous one"
+
+        $(document).on('formset:added', function(event, $row, formsetName) {
+                var all_expectedprojectcosts_main_category_select_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-main_category_detail"]');
+                var new_expectedprojectcosts_main_category_select_element = all_expectedprojectcosts_main_category_select_elements[all_expectedprojectcosts_main_category_select_elements.length - 2];
+                var last_expectedprojectcosts_main_category_select_element = all_expectedprojectcosts_main_category_select_elements[all_expectedprojectcosts_main_category_select_elements.length - 3];
+                new_expectedprojectcosts_main_category_select_element.value = last_expectedprojectcosts_main_category_select_element.value
+                //new_expectedprojectcosts_main_category_select_element = last_expectedprojectcosts_main_category_select_element
+                for (var i = 0; i < last_expectedprojectcosts_main_category_select_element.options.length; i++) {
+                    if (last_expectedprojectcosts_main_category_select_element.options[i].selected) {
+                        new_expectedprojectcosts_main_category_select_element.options[i].selected = true;
+                    }
+                }
 
 
 
-var all_select_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-main_category_detail"]');
+                var CurrentSelectIdexpectedprojectcosts = new_expectedprojectcosts_main_category_select_element.id.split('-')[1];
+                var CurrentTypeexpectedprojectcosts = new_expectedprojectcosts_main_category_select_element.value;
+                var id_sub_category_detail_expectedprojectcosts = document.getElementById('id_expectedprojectcosts_set-' + CurrentSelectIdexpectedprojectcosts + '-sub_category_detail');
+                //var initialValue = document.getElementById('id_expectedprojectcosts_set-' + CurrentSelectIdexpectedprojectcosts + '-sub_category_detail').value;
+                
+                fetch('/get_category_subs/?category=' + CurrentTypeexpectedprojectcosts)
+                    .then(response => response.json())
+                    .then(data => {
+                        //Clear the category select menu
+                        id_sub_category_detail_expectedprojectcosts.innerHTML = '';
+    
+                        // Add the new options to the category select menu
+                        data.forEach(function (item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.sub_category;
+                            id_sub_category_detail_expectedprojectcosts.appendChild(option);
+                            //id_sub_category_detail_expectedprojectcosts.value = initialValue;
 
-var new_select_element = all_select_elements[all_select_elements.length - 1];
 
-var last_select_element = all_select_elements[all_select_elements.length - 2];
-var last_select_element_id = last_select_element.id.split('-')[1];
-console.log("cccccccccc")
-console.log(last_select_element_id)
-       
 
-// new_select_element.value = last_select_element.value;
-var new_one = document.getElementById('id_expectedprojectcosts_set-' + last_select_element_id + '-main_category_detail');
-console.log(new_one)
-console.log('new_one')
-for (var i = 0; i < last_select_element.options.length; i++) {
-  if (last_select_element.options[i].selected) {
-    new_select_element.options[i].selected = true;
-  }
-}
-</script>
+                            var all_expectedprojectcosts_sub_category_select_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-sub_category_detail"]');
+                            var new_expectedprojectcosts_sub_category_select_element = all_expectedprojectcosts_sub_category_select_elements[all_expectedprojectcosts_sub_category_select_elements.length - 2];
+                            var last_expectedprojectcosts_sub_category_select_element = all_expectedprojectcosts_sub_category_select_elements[all_expectedprojectcosts_sub_category_select_elements.length - 3];
+                            new_expectedprojectcosts_sub_category_select_element.value = last_expectedprojectcosts_sub_category_select_element.value
+            
+                            //new_expectedprojectcosts_sub_category_select_element = last_expectedprojectcosts_sub_category_select_element
+                            for (var i = 0; i < last_expectedprojectcosts_sub_category_select_element.options.length; i++) {
+                                if (last_expectedprojectcosts_sub_category_select_element.options[i].selected) {
+                                    var desiredValue = last_expectedprojectcosts_sub_category_select_element.options[i].value;
+                                    for (var i = 0; i < new_expectedprojectcosts_sub_category_select_element.options.length; i++) {
+                                        //last_expectedprojectcosts_sub_category_select_element.options[i].value
+                                        if (new_expectedprojectcosts_sub_category_select_element.options[i].value === desiredValue) {
+                                            new_expectedprojectcosts_sub_category_select_element.options[i].selected = true;
+                                            console.log('uuuuuuuuu')
+                                            console.log(new_expectedprojectcosts_sub_category_select_element.options[i])
+            
+                                            console.log(new_expectedprojectcosts_sub_category_select_element.options[i].text)
+                                            console.log('uuuuuuuuu')
+                                            
+                                            
+                                            break;
+                                        }
+                                        //new_expectedprojectcosts_sub_category_select_element.options[i].selected = true;
+                                    } 
+                                    
+                                }
+                            }
 
+                        });
+                }); 
+
+
+
+
+
+
+
+
+
+                var all_projectkhamatcosts_main_category_select_elements = document.querySelectorAll('[id^="id_projectkhamatcosts_set-"][id*="-main_category_detail"]');
+                var new_projectkhamatcosts_main_category_select_element = all_projectkhamatcosts_main_category_select_elements[all_projectkhamatcosts_main_category_select_elements.length - 2];
+                var last_projectkhamatcosts_main_category_select_element = all_projectkhamatcosts_main_category_select_elements[all_projectkhamatcosts_main_category_select_elements.length - 3];
+                new_projectkhamatcosts_main_category_select_element.value = last_projectkhamatcosts_main_category_select_element.value
+                //new_projectkhamatcosts_main_category_select_element = last_projectkhamatcosts_main_category_select_element
+                for (var i = 0; i < last_projectkhamatcosts_main_category_select_element.options.length; i++) {
+                    if (last_projectkhamatcosts_main_category_select_element.options[i].selected) {
+                        new_projectkhamatcosts_main_category_select_element.options[i].selected = true;
+                    }
+                }
+
+
+
+                var CurrentSelectIdprojectkhamatcosts = new_projectkhamatcosts_main_category_select_element.id.split('-')[1];
+                var CurrentTypeprojectkhamatcosts = new_projectkhamatcosts_main_category_select_element.value;
+                var id_sub_category_detail_projectkhamatcosts = document.getElementById('id_projectkhamatcosts_set-' + CurrentSelectIdprojectkhamatcosts + '-sub_category_detail');
+                //var initialValue = document.getElementById('id_projectkhamatcosts_set-' + CurrentSelectIdprojectkhamatcosts + '-sub_category_detail').value;
+                
+                fetch('/get_category_subs/?category=' + CurrentTypeprojectkhamatcosts)
+                    .then(response => response.json())
+                    .then(data => {
+                        //Clear the category select menu
+                        id_sub_category_detail_projectkhamatcosts.innerHTML = '';
+    
+                        // Add the new options to the category select menu
+                        data.forEach(function (item) {
+                            var option = document.createElement('option');
+                            option.value = item.id;
+                            option.text = item.sub_category;
+                            id_sub_category_detail_projectkhamatcosts.appendChild(option);
+                            //id_sub_category_detail_projectkhamatcosts.value = initialValue;
+
+
+
+                            var all_projectkhamatcosts_sub_category_select_elements = document.querySelectorAll('[id^="id_projectkhamatcosts_set-"][id*="-sub_category_detail"]');
+                            var new_projectkhamatcosts_sub_category_select_element = all_projectkhamatcosts_sub_category_select_elements[all_projectkhamatcosts_sub_category_select_elements.length - 2];
+                            var last_projectkhamatcosts_sub_category_select_element = all_projectkhamatcosts_sub_category_select_elements[all_projectkhamatcosts_sub_category_select_elements.length - 3];
+                            new_projectkhamatcosts_sub_category_select_element.value = last_projectkhamatcosts_sub_category_select_element.value
+            
+                            //new_projectkhamatcosts_sub_category_select_element = last_projectkhamatcosts_sub_category_select_element
+                            for (var i = 0; i < last_projectkhamatcosts_sub_category_select_element.options.length; i++) {
+                                if (last_projectkhamatcosts_sub_category_select_element.options[i].selected) {
+                                    var desiredValue = last_projectkhamatcosts_sub_category_select_element.options[i].value;
+                                    for (var i = 0; i < new_projectkhamatcosts_sub_category_select_element.options.length; i++) {
+                                        //last_projectkhamatcosts_sub_category_select_element.options[i].value
+                                        if (new_projectkhamatcosts_sub_category_select_element.options[i].value === desiredValue) {
+                                            new_projectkhamatcosts_sub_category_select_element.options[i].selected = true;
+                                            console.log('uuuuuuuuu')
+                                            console.log(new_projectkhamatcosts_sub_category_select_element.options[i])
+            
+                                            console.log(new_projectkhamatcosts_sub_category_select_element.options[i].text)
+                                            console.log('uuuuuuuuu')
+                                            
+                                            
+                                            break;
+                                        }
+                                        //new_projectkhamatcosts_sub_category_select_element.options[i].selected = true;
+                                    } 
+                                    
+                                }
+                            }
+
+
+
+                        });
+                }); 
+
+
+
+
+
+
+
+
+
+
+        });
+
+
+        
+        //end "projectkhamatcosts" "make select buttons of new raw take the same values of the previous one"
+
+
+
+        
+    </script> 
 
     <script>
-        
-
-
-
-
-        // var addRow = document.querySelectorAll('.add-row');
-        // console.log(addRow)
-        // var addAnotherLink = addRow.querySelector('td');
-        
-
-
-        // document.body.addEventListener('change', function () {
-     
-            
-        // });
-    
-
-        
-
-
-
-        function showCategoryWorkers(event) {
+        function showCategorysubsforexpectedprojectcosts(event) {
             var rowId = event.target.id.split('-')[1];
             var type = this.value;
             if (type) {
-                var id_sub_category_detail = document.getElementById('id_expectedprojectcosts_set-' + rowId + '-sub_category_detail');
+                var id_expectedprojectcosts_sub_category_detail = document.getElementById('id_expectedprojectcosts_set-' + rowId + '-sub_category_detail');
                 fetch('/get_category_subs/?category=' + type)
                     .then(response => response.json())
                     .then(data => {
                         var initialValue = document.getElementById('id_expectedprojectcosts_set-' + rowId + '-sub_category_detail').value;
     
                         // Clear the category select menu
-                        id_sub_category_detail.innerHTML = '';
+                        id_expectedprojectcosts_sub_category_detail.innerHTML = '';
     
                         // Add the new options to the category select menu
                         data.forEach(function (item) {
-                            var option = document.createElement('option');
-                            option.value = item.id;
-                            option.text = item.sub_category;
-                            id_sub_category_detail.appendChild(option);
-                            id_sub_category_detail.value = initialValue;
+                            var expectedprojectcosts_option = document.createElement('option');
+                            expectedprojectcosts_option.value = item.id;
+                            expectedprojectcosts_option.text = item.sub_category;
+                            id_expectedprojectcosts_sub_category_detail.appendChild(expectedprojectcosts_option);
+                            id_expectedprojectcosts_sub_category_detail.value = initialValue;
                         });
                     });
             }
@@ -90,43 +211,42 @@ for (var i = 0; i < last_select_element.options.length; i++) {
     
         // Attach event listener to a common parent element using event delegation
         document.body.addEventListener('change', function (event) {
-            
             var targetId = event.target.id;
     
             if (targetId && targetId.includes('-main_category_detail')) {
-                showCategoryWorkers.call(event.target, event);
+                showCategorysubsforexpectedprojectcosts.call(event.target, event);
             }
         });
     
         // Trigger the event for existing elements
         var selectElements = document.querySelectorAll('[id*="id_expectedprojectcosts_set-"][id*="-main_category_detail"]');
         selectElements.forEach(function (ele) {
-            showCategoryWorkers.call(ele, { target: ele });
+            showCategorysubsforexpectedprojectcosts.call(ele, { target: ele });
         });
     
-        function showSubCategories(event) {
+        function showCategorySubsforprojectkhamatcosts(event) {
             console.log('llllllllllll');
     
             var rowId = event.target.id.split('-')[1];
             var type = this.value;
     
             if (type) {
-                var id_sub_category_detail = document.getElementById('id_projectkhamatcosts_set-' + rowId + '-sub_category_detail');
-    
+                var id_projectkhamatcosts_sub_category_detail = document.getElementById('id_projectkhamatcosts_set-' + rowId + '-sub_category_detail');
                 fetch('/get_category_subs/?category=' + type)
                     .then(response => response.json())
                     .then(data => {
                         var initialValue = document.getElementById('id_projectkhamatcosts_set-' + rowId + '-sub_category_detail').value;
+    
                         // Clear the category select menu
-                        id_sub_category_detail.innerHTML = '';
+                        id_projectkhamatcosts_sub_category_detail.innerHTML = '';
     
                         // Add the new options to the category select menu
                         data.forEach(function (item) {
-                            var option = document.createElement('option');
-                            option.value = item.id;
-                            option.text = item.sub_category;
-                            id_sub_category_detail.appendChild(option);
-                            id_sub_category_detail.value = initialValue;
+                            var projectkhamatcosts_option = document.createElement('option');
+                            projectkhamatcosts_option.value = item.id;
+                            projectkhamatcosts_option.text = item.sub_category;
+                            id_projectkhamatcosts_sub_category_detail.appendChild(projectkhamatcosts_option);
+                            id_projectkhamatcosts_sub_category_detail.value = initialValue;
                         });
                     });
             }
@@ -134,18 +254,17 @@ for (var i = 0; i < last_select_element.options.length; i++) {
     
         // Attach event listener to a common parent element using event delegation
         document.body.addEventListener('change', function (event) {
-            
             var targetId = event.target.id;
     
             if (targetId && targetId.includes('-main_category_detail')) {
-                showSubCategories.call(event.target, event);
+                showCategorySubsforprojectkhamatcosts.call(event.target, event);
             }
         });
     
         // Trigger the event for existing elements
         var selectElements = document.querySelectorAll('[id*="id_projectkhamatcosts_set-"][id*="-main_category_detail"]');
         selectElements.forEach(function (ele) {
-            showSubCategories.call(ele, { target: ele });
+            showCategorySubsforprojectkhamatcosts.call(ele, { target: ele });
         });
 
 
@@ -156,22 +275,22 @@ for (var i = 0; i < last_select_element.options.length; i++) {
             var type = this.value;
     
             if (type) {
-                var id_sub_category_detail = document.getElementById('id_projectworkersreserves_set-' + rowId + '-sub_category_detail');
+                var id_projectworkersreserves_sub_category_detail = document.getElementById('id_projectworkersreserves_set-' + rowId + '-sub_category_detail');
     
                 fetch('/get_category_subs/?category=' + type)
                     .then(response => response.json())
                     .then(data => {
                         var initialValue = document.getElementById('id_projectworkersreserves_set-' + rowId + '-sub_category_detail').value;
                         // Clear the category select menu
-                        id_sub_category_detail.innerHTML = '';
+                        id_projectworkersreserves_sub_category_detail.innerHTML = '';
     
                         // Add the new options to the category select menu
                         data.forEach(function (item) {
-                            var option = document.createElement('option');
-                            option.value = item.id;
-                            option.text = item.sub_category;
-                            id_sub_category_detail.appendChild(option);
-                            id_sub_category_detail.value = initialValue;
+                            var projectworkersreserves_option = document.createElement('option');
+                            projectworkersreserves_option.value = item.id;
+                            projectworkersreserves_option.text = item.sub_category;
+                            id_projectworkersreserves_sub_category_detail.appendChild(projectworkersreserves_option);
+                            id_projectworkersreserves_sub_category_detail.value = initialValue;
                         });
                     });
             }
@@ -189,14 +308,19 @@ for (var i = 0; i < last_select_element.options.length; i++) {
         // Trigger the event for existing elements
         var selectElements = document.querySelectorAll('[id*="id_projectworkersreserves_set-"][id*="-main_category_detail"]');
         selectElements.forEach(function (ele) {
-            showSubCategories.call(ele, { target: ele });
+            showSubCategoriesforWorkersReserves.call(ele, { target: ele });
         });
 
 
 
-
+        
         
     </script>
 
+
+
+
+
     
+
 {% endblock %}

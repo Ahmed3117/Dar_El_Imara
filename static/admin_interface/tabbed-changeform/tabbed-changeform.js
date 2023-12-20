@@ -10,7 +10,6 @@
         },
 
         openTabByName: function(tabName) {
-            console.log(tabName)
             let tablinkEl = document.getElementById("tablink-" + tabName);
             let tabcontentEl = document.getElementById("tabcontent-" + tabName);
             if (!tablinkEl || !tabcontentEl) {
@@ -72,8 +71,15 @@
 
     // scope.tabbedChangeForm.openTabByLocationHash();
     document.addEventListener('DOMContentLoaded', function() {
-        console.log("mmmm")
+        
         scope.tabbedChangeForm.openTabByLocationHash();
     }, false);
 
+
+
+    
+
 }(window.AdminInterface = window.AdminInterface || {}));
+
+
+
