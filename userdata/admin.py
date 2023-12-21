@@ -13,7 +13,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     # printinvoice.short_description = ' تقرير '
     class Media:
         js = ('/static/admin/js/employee_types.js',)
- 
+
 class EmployeeInlineAdmin(admin.TabularInline):
     model = Employee
     extra = 1
