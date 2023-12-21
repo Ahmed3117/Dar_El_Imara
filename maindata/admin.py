@@ -35,18 +35,18 @@ class UnpaidFilter(admin.SimpleListFilter):
             return queryset.filter(id__in=paid_ids)
 
 class ExpectedProjectCostsAdmin(admin.ModelAdmin):
-    list_display = ('project', 'main_category_detail', 'sub_category_detail', 'workers_reserves', 'workers_reserves_cost', 'build_subjects', 'build_subjects_cost')
+    list_display = ('project', 'main_category_detail', 'sub_category_detail', 'workers_reserves', 'workers_reserves_cost', 'khama', 'total_cost_for_this_khama')
     list_filter = ('project', 'main_category_detail', 'sub_category_detail')
     search_fields = ('project__project_name', 'main_category_detail__main_category', 'sub_category_detail__sub_category', 'workers__name', 'pay_reason', 'main_category_detail__main_category', 'market__sourcemarket')
-    autocomplete_fields = ('project',)
+    autocomplete_fields = ('project','khama')
     class Media:
         js = ('/static/admin/js/custom_project_costs.js',)
     
 class ProjectKhamatCostsAdmin(admin.ModelAdmin):
-    list_display = ('project', 'main_category_detail', 'sub_category_detail','who_paid','khama','market','price','paid','date_added')
+    list_display = ('project', 'main_category_detail', 'sub_category_detail','who_paid','khama','market','total_cost_for_this_khama','paid','date_added')
     list_filter = ('project', 'main_category_detail', 'sub_category_detail')
     search_fields = ('project__project_name', 'main_category_detail__main_category', 'sub_category_detail__sub_category')
-    autocomplete_fields = ('project','market','who_paid')
+    autocomplete_fields = ('project','market','who_paid','khama')
     class Media:
         js = ('/static/admin/js/custom_project_costs.js',)
     
@@ -74,6 +74,7 @@ class ExpectedProjectCostsInlineAdmin(admin.TabularInline):
     model = ExpectedProjectCosts
     extra = 0
     show_change_link = True
+    autocomplete_fields = ('khama',)
     # classes = ('collapse',)
     
 class ProjectKhamatCostsInlineAdmin(admin.TabularInline):
@@ -81,12 +82,13 @@ class ProjectKhamatCostsInlineAdmin(admin.TabularInline):
     extra = 0
     show_change_link = True
     # classes = ('collapse',)
-    autocomplete_fields = ('who_paid',)
+    autocomplete_fields = ('market','who_paid','khama')
 
 class ProjectWorkersReservesInlineAdmin(admin.TabularInline):
     model = ProjectWorkersReserves
     extra = 0
     show_change_link = True
+    # autocomplete_fields = ('main_category_detail',)
     # classes = ('collapse',)
 
 class inPayAdmin(admin.ModelAdmin):
@@ -121,8 +123,8 @@ class ProjectAdmin(admin.ModelAdmin):
 
     list_display_links = ('project_name',)
     # list_display = ('is_done','project_name','client','projectinfo','totalprojectengsupervisioncosts','projecttotaldesignworkscosts','projectdeservedengsupervisioncosts','alldeservedmoney','totalinpaycosts','charge','designworksdetails','expectedprojectcosts','projectcosts','engsupervisionworksdetails','inpaydatails','printinvoice','date_added')
-    list_display = ('is_done','project_name','client','projectinfo','details','printinvoice','date_added')
-    search_fields = ('client__name','project_name','project_address')
+    list_display = ('is_done','project_name','client','projectinfo','details','printinvoice','coin','date_added')
+    search_fields = ('client__name','project_name','project_address','coin__coin')
     list_filter = ('date_added','is_done',UnpaidFilter)
     inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin,WorkerCountInlineAdmin,MarketCountInlineAdmin]
     change_list_template = 'admin/maindata/Project/change_list.html'
@@ -226,8 +228,8 @@ class ProjectAdmin(admin.ModelAdmin):
         total_khamat_cost = 0
         khamat_costs = ProjectKhamatCosts.objects.filter(project = obj)
         for cost in khamat_costs:
-            if cost.price:
-                total_khamat_cost = total_khamat_cost + cost.price 
+            if cost.total_cost_for_this_khama:
+                total_khamat_cost = total_khamat_cost + cost.total_cost_for_this_khama 
         #------------------------------------
         # تكاليف المصنعيات
         total_workersreserves_cost = 0
@@ -277,7 +279,7 @@ class ProjectAdmin(admin.ModelAdmin):
             worker_data.append(inst['total_price'] - all_paid)
             workersreserves.append(worker_data)
         #----------------------------------------
-        project_markets_reserves = ProjectKhamatCosts.objects.filter(project = obj).values('market').annotate(total_price = Sum('price'),total_paid = Sum('paid'))
+        project_markets_reserves = ProjectKhamatCosts.objects.filter(project = obj).values('market').annotate(total_price = Sum('total_cost_for_this_khama'),total_paid = Sum('paid'))
         marketsreserves = []
         for inst in project_markets_reserves:
             market_data = []

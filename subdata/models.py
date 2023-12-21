@@ -41,3 +41,20 @@ class EmployeeCategory(models.Model):
 
     def __str__(self):
         return self.category
+
+
+
+class Khama(models.Model):
+    name = models.CharField(verbose_name="اسم الخامة ", max_length=100, blank=True , null=True)
+    main_category = models.ForeignKey(CategoryDetail, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="البند الاساسى")
+    unit_price = models.IntegerField(null=True, blank=True, verbose_name="سعر الوحده ")
+    class Meta:
+        verbose_name_plural = ' الخامات'
+        verbose_name = ' خامة'
+
+    def __str__(self):
+        if self.name:
+            return self.name
+        else:
+            return '---'
+

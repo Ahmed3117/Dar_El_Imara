@@ -18,7 +18,7 @@ class EmployeeInlineAdmin(admin.TabularInline):
     model = Employee
     extra = 1
     show_change_link = True
-    classes = ('collapse',)
+    # classes = ('collapse',)
 
 class UserAdmin(admin.ModelAdmin):
     list_display = ('name','type','national_id', 'phone_number', 'address', 'code')

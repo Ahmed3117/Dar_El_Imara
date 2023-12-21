@@ -75,8 +75,8 @@ class EngSupervision(models.Model):
             workersreserves_costs = ProjectWorkersReserves.objects.filter(project = self.project)
 
             for cost in khamat_costs:
-                if cost.price:
-                    total_khamat_cost = total_khamat_cost + cost.price
+                if cost.total_cost_for_this_khama:
+                    total_khamat_cost = total_khamat_cost + cost.total_cost_for_this_khama
         
             for cost in workersreserves_costs:
                 if cost.price:
@@ -97,8 +97,8 @@ class EngSupervision(models.Model):
             khamat_costs = ProjectKhamatCosts.objects.filter(project = self.project)
             workersreserves_costs = ProjectWorkersReserves.objects.filter(project = self.project)
             for cost in khamat_costs:
-                if cost.price:
-                    total_khamat_cost = total_khamat_cost + cost.price
+                if cost.total_cost_for_this_khama:
+                    total_khamat_cost = total_khamat_cost + cost.total_cost_for_this_khama
             for cost in workersreserves_costs:
                 if cost.price:
                     total_workersreserves_cost = total_workersreserves_cost + cost.price 

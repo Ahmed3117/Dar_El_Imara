@@ -18,7 +18,7 @@ def invoice(request, pk):
     #------------------------------------
     # التكاليف المتوقعة
     project_expected_costs_list = []
-    project_expected_costs = ExpectedProjectCosts.objects.filter(project = obj).values('main_category_detail').annotate(total_workers_reserves = Sum('workers_reserves_cost'),total_build_subjects = Sum('build_subjects_cost'),total_sum = Sum('workers_reserves_cost') + Sum('build_subjects_cost'))
+    project_expected_costs = ExpectedProjectCosts.objects.filter(project = obj).values('main_category_detail').annotate(total_workers_reserves = Sum('workers_reserves_cost'),total_khama = Sum('total_cost_for_this_khama'),total_sum = Sum('workers_reserves_cost') + Sum('total_cost_for_this_khama'))
     print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
     print(project_expected_costs)
     for inst in project_expected_costs:
@@ -26,7 +26,7 @@ def invoice(request, pk):
         main_category = CategoryDetail.objects.get(id = inst['main_category_detail']).main_category
         obj_list.append(main_category)
         obj_list.append(inst['total_workers_reserves'])
-        obj_list.append(inst['total_build_subjects'])
+        obj_list.append(inst['total_khama'])
         obj_list.append(inst['total_sum'])
         project_expected_costs_list.append(obj_list)
     print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
@@ -47,8 +47,8 @@ def invoice(request, pk):
     total_khamat_cost = 0
     khamat_costs = ProjectKhamatCosts.objects.filter(project = obj)
     for cost in khamat_costs:
-        if cost.price:
-            total_khamat_cost = total_khamat_cost + cost.price 
+        if cost.total_cost_for_this_khama:
+            total_khamat_cost = total_khamat_cost + cost.total_cost_for_this_khama 
     #------------------------------------
     # تكاليف المصنعيات
     total_workersreserves_cost = 0
@@ -80,7 +80,11 @@ def invoice(request, pk):
         worker = User.objects.get(id = inst['worker'])
         worker_name = worker.name
         worker_code = worker.code
-        worker_job = Employee.objects.get(user = worker).category.category
+        worker_job = "غير معروف"
+        try:
+            worker_job = Employee.objects.get(user = worker).category.category
+        except:
+            pass
         directly_paid_costs = WorkerCount.objects.filter(project = obj,worker = worker)
         for cost in directly_paid_costs:
             if cost.directlyarrived:
@@ -99,7 +103,7 @@ def invoice(request, pk):
     print(workersreserves)
     #-----------------------------------
     #----------------------------------------
-    project_markets_reserves = ProjectKhamatCosts.objects.filter(project = obj).values('market').annotate(total_price = Sum('price'),total_paid = Sum('paid'))
+    project_markets_reserves = ProjectKhamatCosts.objects.filter(project = obj).values('market').annotate(total_price = Sum('total_cost_for_this_khama'),total_paid = Sum('paid'))
     marketsreserves = []
     for inst in project_markets_reserves:
         market_data = []
@@ -120,11 +124,10 @@ def invoice(request, pk):
     #-----------------------------------
     
     theme = Theme.objects.get(active = 1)
-    print(theme)
-    print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
-    print(theme.logo.url)
-    logo = theme.logo
-    logo_url = logo.url
+    logo_url = None
+    if theme.logo:
+        logo = theme.logo
+        logo_url = logo.url
     #-----------------------------------
     context = {
             'project_id' : pk,
@@ -171,20 +174,20 @@ def addprojectcost(request,project_pk,main_category_pk,sub_category_pk):
         sub_category = SubCategoryDetail.objects.get(id=sub_category_pk)
         workers_reserves = request.POST.get('workers_reserves', '')
         workers_reserves_cost = request.POST.get('workers_reserves_cost', '')
-        build_subjects = request.POST.get('build_subjects', '')
-        build_subjects_cost = request.POST.get('build_subjects_cost', '')
-        expectedcost = ExpectedProjectCosts.objects.create(project=project,main_category_detail = main_category,sub_category_detail = sub_category,workers_reserves = workers_reserves , workers_reserves_cost = workers_reserves_cost,build_subjects = build_subjects,build_subjects_cost=build_subjects_cost)
+        khama = request.POST.get('khama', '')
+        total_cost_for_this_khama = request.POST.get('total_cost_for_this_khama', '')
+        expectedcost = ExpectedProjectCosts.objects.create(project=project,main_category_detail = main_category,sub_category_detail = sub_category,workers_reserves = workers_reserves , workers_reserves_cost = workers_reserves_cost,khama = khama,total_cost_for_this_khama=total_cost_for_this_khama)
         expectedcost.save()
         serialized_expected_costs = []
         serialized_expected_costs = [expectedcost]
-        expectedcost = serializers.serialize('json', serialized_expected_costs, fields=('workers_reserves', 'workers_reserves_cost', 'build_subjects', 'build_subjects_cost'))
+        expectedcost = serializers.serialize('json', serialized_expected_costs, fields=('workers_reserves', 'workers_reserves_cost', 'khama', 'total_cost_for_this_khama'))
     
     return JsonResponse({'expectedcost': expectedcost}, safe=False)       
 def get_project_expected_costs(request,subcategory_id):
     # sub_category_detail
     subcategory = SubCategoryDetail.objects.get(id = subcategory_id)
     costs = ExpectedProjectCosts.objects.filter(sub_category_detail=subcategory)
-    costs_json = serializers.serialize('json', costs, fields=('workers_reserves', 'workers_reserves_cost', 'build_subjects', 'build_subjects_cost'))
+    costs_json = serializers.serialize('json', costs, fields=('workers_reserves', 'workers_reserves_cost', 'khama', 'total_cost_for_this_khama'))
     return JsonResponse(costs_json, safe=False)
 
 

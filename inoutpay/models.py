@@ -3,8 +3,6 @@ from maindata.models import Project
 from userdata.models import Employee,User
 # Create your models here.
 
-
-
 # السحب من الخزينة لصالح مشاريع معينة
 class MoneyWithDraw(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
@@ -22,3 +20,5 @@ class MoneyWithDraw(models.Model):
     class Meta:
         verbose_name_plural = '  السحب من الخزينة'
         verbose_name=' عملية سحب '
+
+
