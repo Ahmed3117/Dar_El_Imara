@@ -7,20 +7,39 @@
         .column-sub_category_detail {
             max-width: 50%;
         }
+        .admin-autocomplete{
+            max-width : 120px !important;
+        }
+        .vIntegerField{
+            max-width : 50px !important;
+        }
+        .vTextField{
+            max-width : 100px !important;
+        }
+        .field-file{
+            max-width : 160px !important;
+        }
     </style>
 
     <script src="{% static 'js/jquery.js' %}"></script>
 
 
     <script>
-        //var all_note_elements = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-notes"]');
-        //for (var i = 0; i < all_note_elements.length; i++) {
-          
-           // all_note_elements[i].disabled = true;
-          
-        //}
         
-
+        var all_total_cost_for_this_khama_elements_projectkhamatcosts = document.querySelectorAll('[id^="id_projectkhamatcosts_set-"][id*="-total_cost_for_this_khama"]');
+        for (var i = 0; i < all_total_cost_for_this_khama_elements_projectkhamatcosts.length; i++) {
+        
+            all_total_cost_for_this_khama_elements_projectkhamatcosts[i].disabled = true;
+        
+        }
+        //expectedprojectcosts
+        var all_total_cost_for_this_khama_elements_expectedprojectcosts = document.querySelectorAll('[id^="id_expectedprojectcosts_set-"][id*="-total_cost_for_this_khama"]');
+        for (var i = 0; i < all_total_cost_for_this_khama_elements_expectedprojectcosts.length; i++) {
+        
+            all_total_cost_for_this_khama_elements_expectedprojectcosts[i].disabled = true;
+        
+        }
+        
         // "expectedprojectcosts" "make select buttons of new raw take the same values of the previous one"
 
         $(document).on('formset:added', function(event, $row, formsetName) {

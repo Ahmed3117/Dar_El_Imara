@@ -5,5 +5,5 @@ class MaindataConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'maindata'
     verbose_name = '  المشاريع وتكاليفها '
-    order = 1
+    # order = 1
 

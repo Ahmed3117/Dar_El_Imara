@@ -18,7 +18,11 @@ class User(models.Model):
     code = models.CharField(verbose_name="الكود", max_length=12, editable=False, null=True, blank=True)
         
     def __str__(self):
-        return self.name
+        if self.name:
+            return self.name
+        else:
+            return '---'
+        
     def save(self, *args, **kwargs):
         if not self.code:
             # Generate the code
@@ -56,4 +60,8 @@ class MarketSources(models.Model):
         verbose_name = ' مورد'
 
     def __str__(self):
-        return self.sourcemarket
+        if self.sourcemarket:
+            return self.sourcemarket
+        else:
+            return '---'
+        

@@ -102,7 +102,8 @@ a {
     .box {
         display: block;
     }
-    </style>
+</style>
+
     
         <div class="page-content container">
             <div class="page-header text-blue-d2">
@@ -120,11 +121,14 @@ a {
                         <div class="col-9 align-self-start d-sm-flex justify-content-end">
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox0"> اجمالى المشروع 
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox1"> تكاليف متوقعة
-                            <input type="checkbox" class="checkbox m-2" checked id="checkbox2">مستحقات العاملين
-                            <input type="checkbox" class="checkbox m-2" checked id="checkbox3">الوارد المالى
-                            <input type="checkbox" class="checkbox m-2" checked id="checkbox4"> اعمال التصميم
-                            <input type="checkbox" class="checkbox m-2" checked id="checkbox5"> الاشراف (التكاليف)
-                            <input type="checkbox" class="checkbox m-2" checked id="checkbox6">الكل
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox2"> الخامات الفعلية
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox3">مستحقات العاملين
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox4">مستحقات الموردين
+                            
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox5">الوارد المالى
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox6"> اعمال التصميم
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox7"> الاشراف (التكاليف)
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox8">الكل
                         </div>
                     </div>
                     
@@ -183,7 +187,7 @@ a {
                                             <div class="d-none d-sm-block col-1 col-sm-1"> الخامات</div>
                                             <div class="d-none d-sm-block col-1 col-sm-1"> المصنعيات</div>
                                             <div class="col-2 col-sm-2">الوارد المالى</div>
-                                            <div class="col-2 col-sm-2"> باقى الحساب</div>
+                                            <div class="col-2 col-sm-2" tooltip = "lllllll">  باقى الحساب (المتبقى على العميل)</div>
                                         </div>
                                         <div class="text-95 text-secondary-d3">
                                             <div class="row mb-2 mb-sm-0 py-25">
@@ -205,10 +209,10 @@ a {
                                         <div class="row text-white bgc-default-tp1 ">
                                             
                                             <div class="col-2 col-sm-2" style="background-color: #d87606"> التكاليف المتوقعة (مج)</div>
-                                            <div class="col-3 col-sm-3"> العمل</div>
+                                            <div class="col-3 col-sm-3"> البند</div>
                                             <div class="d-none d-sm-block col-2 col-sm-2">  مصنعيات </div>
-                                            <div class="d-none d-sm-block col-1 col-sm-1"> خامات</div>
-                                            <div class="d-none d-sm-block col-1 col-sm-1"> المجموع الكلى</div>
+                                            <div class="d-none d-sm-block col-2 col-sm-2"> خامات</div>
+                                            <div class="d-none d-sm-block col-2 col-sm-2"> المجموع الكلى</div>
                                             
                                         </div>
                                         {% for main_category_cost in project_expected_costs_list %}
@@ -229,6 +233,51 @@ a {
                                             
                                         {% endfor %}
                                     
+                                    </div>
+
+                                    <div class="box" id="box7">  
+                                        
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606">  الخامات الفعلية (مج)</div>
+                                                <div class="col-2 col-sm-2">  الخامة</div>
+                                                <div class="d-none d-sm-block col-1 col-sm-1">  الكمية  </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> سعر الوحدة </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> السعر الكلى</div>
+                                                <div class="d-none d-sm-block col-1 col-sm-1">  المدفوع</div>
+                                                <div class="col-2 col-sm-2"> القائم بالدفع</div>
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for khamacost in khamat_costs %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    {% if khamacost.khama %}
+                                                    <div class="col-2 col-sm-2">{{khamacost.khama.name}}</div>
+                                                    {% else %}
+                                                        <div class="col-2 col-sm-2">غير معروف</div>
+                                                    {% endif %}
+                                                    
+                                                    <div class="d-none d-sm-block col-1 col-sm-1">{{khamacost.quantity}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{khamacost.khama_current_price}}</div>
+                                                    <div class="col-2 col-sm-2">{{khamacost.total_cost_for_this_khama}}</div>
+                                                    <div class="col-1 col-sm-1">{{khamacost.paid}}</div>
+                                                    {% if khamacost.who_paid %}
+                                                        <div class="col-2 col-sm-2">{{khamacost.who_paid.name}}</div>
+                                                    {% else %}
+                                                        <div class="col-2 col-sm-2">غير معروف</div>
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                
+                                                {% endfor %}
+                        
+                                            </div>
                                     </div>
 
                                     <div class="box" id="box2">  
@@ -310,7 +359,11 @@ a {
                                                 <div class="row mb-2 mb-sm-0 py-25">
                                                     <div class="col-2 col-sm-2"></div>
                                                     <div class="col-2 col-sm-2">{{inpay.giver}}</div>
-                                                    <div class="d-none d-sm-block col-3 col-sm-3">{{inpay.recipient}}</div>
+                                                    {% if inpay.recipient %}
+                                                        <div class="d-none d-sm-block col-3 col-sm-3">{{inpay.recipient}}</div>
+                                                    {% else %}
+                                                        <div class="d-none d-sm-block col-3 col-sm-3">غير محدد</div>
+                                                    {% endif %}
                                                     <div class="d-none d-sm-block col-3 col-sm-3">{{inpay.date_added}}</div>
                                                     <div class="d-none d-sm-block col-2 col-sm-2">{{inpay.paid}}</div>
                                                 </div>
@@ -379,7 +432,7 @@ a {
                                                 {% for engsupervisionwork in engsupervisionworks %}
                                                 <div class="row mb-2 mb-sm-0 py-25">
                                                     <div class="col-2 col-sm-2"></div>
-                                                    <div class="col-3 col-sm-3">{{engsupervisionwork.all_costs}}</div>
+                                                    <div class="col-3 col-sm-3">{{engsupervisionwork.allcosts}}</div>
                                                     {% if engsupervisionwork.account_way == 'percent' %}
                                                     <div class="d-none d-sm-block col-3 col-sm-3">نسبة</div>
                                                     {% endif %}
@@ -459,7 +512,7 @@ a {
           });
         });
     
-        const selectDeselectAll = document.getElementById('checkbox6');
+        const selectDeselectAll = document.getElementById('checkbox8');
         selectDeselectAll.addEventListener('change', () => {
           checkboxes.forEach(checkbox => {
             checkbox.checked = selectDeselectAll.checked;

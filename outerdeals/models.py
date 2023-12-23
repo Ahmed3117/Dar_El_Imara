@@ -11,7 +11,10 @@ class OfficeCosts(models.Model):
     file = models.FileField(upload_to='costs_files/', null=True,blank=True,verbose_name = "   فاتورة ")
 
     def __str__(self) :
-        return str(self.ammount)
+        if self.ammount :
+            return str(self.ammount)
+        else:
+            return '---'
     class Meta:
         verbose_name_plural = ' استهلاكات المكتب '
         verbose_name='  مصروف '
@@ -25,10 +28,16 @@ class OutDeals(models.Model):
     paid = models.IntegerField(verbose_name = "  المدفوع حتى الان",default = 0,null=True,blank=True)
     file = models.FileField(upload_to='costs_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     def charge(self):
-        return self.ammount - self.paid 
+        if self.ammount and self.paid:
+            return self.ammount - self.paid 
+        else :
+            return 0
     charge.short_description = "   الباقى" 
     def __str__(self) :
-        return str(self.creditor)
+        if self.creditor :
+            return str(self.creditor)
+        else:
+            return '---'
     class Meta:
         verbose_name_plural = '  سلف وتعاملات اخرى '
         verbose_name='  تعامل  '
@@ -44,7 +53,11 @@ class MonthPay(models.Model):
             self.outdeal.save()
         super().save(*args, **kwargs)
     def __str__(self) :
-        return str(self.outdeal.creditor.name)
+        if self.creditor :
+            return str(self.outdeal.creditor.name)
+        else:
+            return '---'
+
     class Meta:
         verbose_name_plural = '  اقساط '
         verbose_name='  قسط  '

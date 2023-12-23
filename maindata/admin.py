@@ -6,7 +6,6 @@ from django.template.context_processors import csrf
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
 from django.db.models import Sum
-from finishcount.models import WorkerCount
 
 from inoutpay.models import MoneyWithDraw
 from .models import ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay

@@ -495,3 +495,20 @@
     transition: none;
     filter: invert(100%);
 }
+
+
+.column-sub_category_detail {
+    max-width: 50%;
+}
+.admin-autocomplete{
+    max-width : 120px !important;
+}
+.vIntegerField{
+    max-width : 50px !important;
+}
+.vTextField{
+    max-width : 100px !important;
+}
+.field-file{
+    max-width : 160px !important;
+}

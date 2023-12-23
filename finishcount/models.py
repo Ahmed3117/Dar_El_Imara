@@ -43,7 +43,7 @@ class WorkerCount(models.Model):
         if self.project:
             return str(self.project.project_name)
         else:
-            return '-'
+            return '---'
     class Meta:
         verbose_name_plural = ' تخليص حسابات العمال'
         verbose_name='  تعامل '
@@ -58,8 +58,8 @@ class MarketCount(models.Model):
         total_khamat_cost = 0
         khamat_costs = ProjectKhamatCosts.objects.filter(project = self.project,market=self.source)
         for cost in khamat_costs:
-            if cost.price:
-                total_khamat_cost = total_khamat_cost + cost.price 
+            if cost.total_cost_for_this_khama:
+                total_khamat_cost = total_khamat_cost + cost.total_cost_for_this_khama 
         return total_khamat_cost
     
     def alreadypaidforthisproject(self):
@@ -70,7 +70,7 @@ class MarketCount(models.Model):
             if cost.paid :
                 total_khamat_paid = total_khamat_paid + cost.paid 
                 
-        directly_paid_costs = MarketCount.objects.filter(project = self.project,market=self.source)
+        directly_paid_costs = MarketCount.objects.filter(project = self.project,source=self.source)
         for cost in directly_paid_costs:
             if cost.directlyarrived:
                 total_directly_paid = total_directly_paid + cost.directlyarrived 
@@ -84,7 +84,7 @@ class MarketCount(models.Model):
         if self.project:
             return str(self.project.project_name)
         else:
-            return '-'
+            return '---'
     class Meta:
         verbose_name_plural = ' تخليص حسابات الموردين'
         verbose_name='  تعامل '

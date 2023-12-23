@@ -39,4 +39,4 @@ admin.site.register(CategoryDetail, CategoryDetailAdmin)
 admin.site.register(Khama, KhamaAdmin)
 # admin.site.register(SubCategoryDetail, SubCategoryDetailAdmin)
 
-# admin.site.register(EmployeeCategory, EmployeeCategoryAdmin)
+admin.site.register(EmployeeCategory, EmployeeCategoryAdmin)

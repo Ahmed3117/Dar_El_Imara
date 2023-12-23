@@ -32,3 +32,20 @@
     margin-right: 0px !important;
     padding: 40px 0px 40px 40px !important;
 }
+
+
+.column-sub_category_detail {
+    max-width: 50%;
+}
+.admin-autocomplete{
+    max-width : 120px !important;
+}
+.vIntegerField{
+    max-width : 50px !important;
+}
+.vTextField{
+    max-width : 100px !important;
+}
+.field-file{
+    max-width : 160px !important;
+}

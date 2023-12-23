@@ -11,7 +11,7 @@ class CategoryDetail(models.Model):
         if self.main_category:
             return self.main_category
         else: 
-            return ''
+            return '---'
 
 class SubCategoryDetail(models.Model):
     sub_category = models.CharField(verbose_name="اسم البند ", max_length=100, blank=True , null=True)
@@ -40,8 +40,10 @@ class EmployeeCategory(models.Model):
         verbose_name = ' تصنيف'
 
     def __str__(self):
-        return self.category
-
+        if self.category:
+            return self.category
+        else:
+            return '---'
 
 
 class Khama(models.Model):

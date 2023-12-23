@@ -16,7 +16,10 @@ class MoneyWithDraw(models.Model):
     file = models.FileField(upload_to='out_pay_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     
     def __str__(self) :
-        return str(self.ammount)
+        if self.ammount :
+            return str(self.ammount)
+        else:
+            return '---'
     class Meta:
         verbose_name_plural = '  السحب من الخزينة'
         verbose_name=' عملية سحب '

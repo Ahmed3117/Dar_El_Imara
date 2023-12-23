@@ -139,6 +139,7 @@ def invoice(request, pk):
             'all_inpay_costs' : all_inpay_costs,
             'total_charge' : total_charge,
             'workersreserves' : workersreserves,
+            'khamat_costs' : khamat_costs,
             'marketsreserves' : marketsreserves,
             'inpaycosts' : inpaycosts,
             'designworks' : designworks,
