@@ -14,7 +14,7 @@ SECRET_KEY = 'django-insecure-dbpx)!#%s!#n^&&r^e0!t&ot$vit@t8++_=1*)#84ym)j-v@(w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*','192.168.1.10']
+ALLOWED_HOSTS = ['*','192.168.1.100']
 
 
 # Application definition
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'worksdata',
     'finishcount',
     'outerdeals',
+    'companyinfo',
 
     # 'autocomplete_light',
 ]
@@ -152,6 +153,7 @@ ADMIN_ORDERING = (
     ('finishcount', ('MarketCount', 'WorkerCount')),
     ('outerdeals', ('OutDeals','OfficeCosts')),
     ('inoutpay', ('MoneyWithDraw',)),
+    ('companyinfo', ('CompanyInfo',)),
     ('auth', ('User', 'Group')),
     ('admin_interface', ('Theme', )),
     

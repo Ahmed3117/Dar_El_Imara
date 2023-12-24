@@ -5,8 +5,8 @@
 {% block result_list %}
 <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}" />
 <link rel="stylesheet" href="{% static 'css/all.min.css' %}" />
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script> 
-<script src="{% static 'js/all.min.js' %}"></script> 
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/all.min.js' %}"></script>
 
 <style>
 
@@ -67,7 +67,7 @@ a {
     .modal.show .modal-content * {
       visibility: visible;
     }
-    
+
   }
 
   table thead th .text a,
@@ -97,7 +97,7 @@ a {
     font-size: 1rem;
     padding: 0 15px;
     margin-bottom: 10px;
-}
+  }
 
   input[type=text], input[type=password], input[type=email], input[type=url], input[type=number], input[type=tel], textarea, select, .vTextField {
       border: 1px solid var(--border-color);
@@ -106,6 +106,9 @@ a {
       margin-top: 0;
       color: var(--body-fg);
       background-color: var(--body-bg);
+  }
+  #toolbar form #searchbar {
+    height: 1.75rem;
   }
 </style>
 
@@ -116,13 +119,16 @@ a {
 </div> {% endcomment %}
 
 
-    
+
 <script>
+
+  // add aplace holder to the searchbar
+    var inputElement = document.getElementById("searchbar");
+    inputElement.placeholder = "ابحث عن طريق اسم او كود العميل  , اسم او عنوان المشروع";
+
 function printPage() {
 window.print();
 }
-
-
 
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -234,6 +240,3 @@ selectElement.addEventListener('change', handleNumberInputVisibility);
 
 </script>
 {% endblock %}
-
-
-

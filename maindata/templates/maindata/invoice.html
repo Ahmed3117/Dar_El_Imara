@@ -460,10 +460,15 @@ a {
                                                     <div class="row text-white bgm py-25 ">
                                                         معلومات التواصل
                                                     </div>
-                                        
-                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">العنوان:</span> البرج - البرلس</div>
-                                        
-                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">موبايل:</span> 01095163117</div>
+                                                    {% if companyinfo.address %}
+                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">العنوان:</span> {{companyinfo.address}} </div>
+                                                    {% endif %}
+                                                    {% if companyinfo.address %}
+                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">موبايل:</span>  {{companyinfo.phone}}</div>
+                                                    {% endif %}
+                                                    {% if companyinfo.mail %}
+                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">الايميل:</span>  {{companyinfo.mail}}</div>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                         

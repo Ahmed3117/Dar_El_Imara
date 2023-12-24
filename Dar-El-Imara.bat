@@ -1,5 +1,4 @@
-E:
-cd E:\dar_elimara\Dar_El_Imara v-2
-start http://127.0.0.1:8000/admin
-python3 manage.py runserver
-
+C:
+cd C:\Users\hp\Desktop\Dar_Elimara
+start http://192.168.1.100:8000/admin
+python3 manage.py runserver 192.168.1.100:8000

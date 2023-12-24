@@ -8,7 +8,8 @@ from maindata.models import Project
 class WorkerCount(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     worker = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "العامل" ,limit_choices_to={"type": "W"}) 
-    directlyarrived = models.IntegerField(verbose_name = " المدفوع",null=True,blank=True)
+    directlyarrived = models.IntegerField(verbose_name = " المدفوع",null=True,blank=True,default = 0)
+    # charge_reserved = models.IntegerField(verbose_name = " اجمالى باقى المستحق",null=True,blank=True,default = 0)
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     file = models.FileField(upload_to='WorkerCount_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     def deservedforthisproject(self):
@@ -36,6 +37,11 @@ class WorkerCount(models.Model):
     
     def charge(self):
         return (self.deservedforthisproject() - self.alreadypaidforthisproject())
+    # def save(self, *args, **kwargs):
+        
+    #     self.charge_reserved = self.charge()
+    #     super().save(*args, **kwargs)
+        
     deservedforthisproject.short_description = ' المستحق لهذا المشروع '
     alreadypaidforthisproject.short_description = ' المدفوع بالفعل لهذا المشروع '
     charge.short_description = ' الباقى '

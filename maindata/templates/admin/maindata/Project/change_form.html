@@ -323,5 +323,28 @@
 
 
 
+
     </script>
+
+{% comment %} <script>
+const workercount_tabcontent = document.getElementById("tabcontent-tkhlys-hsbt-l-ml");
+const workercount_group = document.getElementById("workercount_set-group");
+
+workercount_group.style.display = 'none'; 
+
+const button = document.createElement("a");
+button.textContent = "Click me"; 
+
+button.style.backgroundColor = "lightblue"; 
+button.addEventListener("click", () => {
+    workercount_group.style.display = 'block';
+}); 
+
+// 4. Append the button to the top of the div using insertBefore:
+workercount_tabcontent.insertBefore(button, workercount_tabcontent.firstChild);
+
+</script> {% endcomment %}
+
+
+
 {% endblock %}

@@ -12,15 +12,17 @@ from userdata.models import Employee, MarketSources,User
 from worksdata.models import DesignWork,EngSupervision
 from django.db.models import Sum
 from admin_interface.models import Theme
+from companyinfo.models import CompanyInfo
 
 def invoice(request, pk):
     obj = Project.objects.get(id = pk)
     #------------------------------------
+    companyinfo = CompanyInfo.objects.last()
+    #------------------------------------
     # التكاليف المتوقعة
     project_expected_costs_list = []
     project_expected_costs = ExpectedProjectCosts.objects.filter(project = obj).values('main_category_detail').annotate(total_workers_reserves = Sum('workers_reserves_cost'),total_khama = Sum('total_cost_for_this_khama'),total_sum = Sum('workers_reserves_cost') + Sum('total_cost_for_this_khama'))
-    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-    print(project_expected_costs)
+
     for inst in project_expected_costs:
         obj_list = []
         main_category = CategoryDetail.objects.get(id = inst['main_category_detail']).main_category
@@ -29,19 +31,21 @@ def invoice(request, pk):
         obj_list.append(inst['total_khama'])
         obj_list.append(inst['total_sum'])
         project_expected_costs_list.append(obj_list)
-    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+
     #------------------------------------
     #  حساب اعمال التصميم
     designworks = DesignWork.objects.filter(project = obj)
     totaldesignworkscosts = 0
     for work in designworks :
-        totaldesignworkscosts += work.workcost()
+        if work.workcost():
+            totaldesignworkscosts += work.workcost()
     #------------------------------------
     # حساب اعمال الاشراف              
     engsupervisionworks = EngSupervision.objects.filter(project = obj)
     totalengsupervisionworkscosts = 0
     for work in engsupervisionworks :
-        totalengsupervisionworkscosts += work.workcost()
+        if work.workcost():
+            totalengsupervisionworkscosts += work.workcost()
     #------------------------------------
     # تكاليف الخامات
     total_khamat_cost = 0
@@ -61,13 +65,18 @@ def invoice(request, pk):
     inpaycosts = inPay.objects.filter(project = obj)
     total_inpay_costs = 0
     for inpay in inpaycosts :
-        total_inpay_costs += inpay.paid
+        if inpay.paid:
+            total_inpay_costs += inpay.paid
     all_inpay_costs = total_inpay_costs
     # all_inpay_costs = total_inpay_costs + obj.paiddirectlybyclient()
     #------------------------------------
     # باقى الحساب
     # charge =0
-    total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost + obj.discount
+    total_charge = 0
+    if obj.discount:
+        total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost  + obj.discount
+    else:
+        total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost
     #------------------------------------
     client = obj.client
     #------------------------------------
@@ -77,21 +86,37 @@ def invoice(request, pk):
         worker_data = []
         charge = 0
         total_directly_paid = 0
-        worker = User.objects.get(id = inst['worker'])
-        worker_name = worker.name
-        worker_code = worker.code
+        worker = ''
+        worker_name = 'غير معروف'
+        worker_code = 'غير معروف'
+        try:
+            worker = User.objects.get(id = inst['worker'])
+
+            worker_name = worker.name
+            worker_code = worker.code
+        except :
+            pass
         worker_job = "غير معروف"
         try:
             worker_job = Employee.objects.get(user = worker).category.category
         except:
             pass
-        directly_paid_costs = WorkerCount.objects.filter(project = obj,worker = worker)
-        for cost in directly_paid_costs:
-            if cost.directlyarrived:
-                total_directly_paid = total_directly_paid + cost.directlyarrived 
-                
-        worker_data.append(worker.name)
-        worker_data.append(worker_job)
+        
+        total_directly_paid = 0
+        directly_paid_costs = ''
+        try:
+            directly_paid_costs = WorkerCount.objects.filter(project = obj,worker = worker)
+            for cost in directly_paid_costs:
+                if cost.directlyarrived:
+                    total_directly_paid = total_directly_paid + cost.directlyarrived 
+        except:
+            pass
+        try:      
+            worker_data.append(worker.name)
+            worker_data.append(worker_job)
+        except:
+            worker_data.append(worker_name)
+            worker_data.append(worker_job)
         worker_data.append(inst['total_price'])
         all_paid = inst['total_paid'] + total_directly_paid
         worker_data.append(all_paid)
@@ -146,6 +171,7 @@ def invoice(request, pk):
             'engsupervisionworks' : engsupervisionworks,
             'client' : client,
             'logo_url' : logo_url,
+            'companyinfo' : companyinfo,
         }
     return render(request,'maindata/invoice.html' ,context)
 def addcostspage(request, pk):

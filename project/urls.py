@@ -12,6 +12,7 @@ urlpatterns = [
     path('worksdata/', include('worksdata.urls',namespace='worksdata')),
     path('finishcount/', include('finishcount.urls',namespace='finishcount')),
     path('outerdeals/', include('outerdeals.urls',namespace='outerdeals')),
+    path('companyinfo/', include('companyinfo.urls',namespace='companyinfo')),
 ]
 urlpatterns+=static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

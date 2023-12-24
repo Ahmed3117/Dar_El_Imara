@@ -131,8 +131,8 @@ class ProjectWorkersReserves(models.Model):
     worker = models.ForeignKey(User, on_delete=models.SET_NULL,related_name='who_did', null=True,blank=True,verbose_name = " العامل",limit_choices_to={"type": "W"}) 
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     work = models.CharField(verbose_name=" العمل", max_length=200, null=True, blank=True)
-    price = models.IntegerField(verbose_name="  التكلفة المستحقة",  null=True, blank=True)
-    paid = models.IntegerField(verbose_name="  المدفوع",  null=True, blank=True)
+    price = models.IntegerField(default = 0 ,verbose_name="  التكلفة المستحقة",  null=True, blank=True)
+    paid = models.IntegerField(default = 0,verbose_name="  المدفوع",  null=True, blank=True)
     file = models.FileField(upload_to='files/', null=True,blank=True,verbose_name = "   ملف ")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     def charge(self):
