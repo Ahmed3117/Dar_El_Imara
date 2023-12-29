@@ -1,12 +1,15 @@
+from django.apps import apps
 from django.db import models
 import random
 from datetime import datetime
+# from finishcount.models import WorkerCount
 # from inoutpay.models import Coin
 from subdata.models import CategoryDetail, Khama,SubCategoryDetail,EmployeeCategory
 from userdata.models import User,Employee,MarketSources
 # from inoutpay.models import inPay
 # from worksdata.models import DesignWorkType
 # from inoutpay.models import inPay
+from django.apps import apps
 
 class Coin(models.Model):
     coin = models.CharField(verbose_name=" اسم العملة", max_length=200, null=True, blank=True) 
@@ -99,6 +102,30 @@ class ProjectKhamatCosts(models.Model):
             khama_price = self.khama_current_price
             self.total_cost_for_this_khama = self.quantity * khama_price
         super().save(*args, **kwargs)  # Save the current object first
+        
+        try:
+            IntermediaryTableMarketCount_obj = IntermediaryTableMarketCount.objects.filter(project = self.project , source = self.market)[0]
+            MarketCount = apps.get_model('finishcount', 'MarketCount')
+            sum_deserved = 0
+            sum_paid_first_time = 0
+            sum_paid_later = 0
+            all_related_deserved = ProjectKhamatCosts.objects.filter(project = self.project , market = self.market)
+            for deserved in all_related_deserved:
+                sum_deserved += deserved.total_cost_for_this_khama
+                sum_paid_first_time += deserved.paid
+            
+            related_source_counts = MarketCount.objects.filter(project = self.project , source = self.market)
+            for sourcecount in related_source_counts:
+                sum_paid_later += sourcecount.directlyarrived
+            
+            IntermediaryTableMarketCount_obj.total_reserved = sum_deserved
+            IntermediaryTableMarketCount_obj.total_paid_until_now = sum_paid_first_time + sum_paid_later
+            IntermediaryTableMarketCount_obj.charge_reserved = sum_deserved - sum_paid_first_time - sum_paid_later
+            IntermediaryTableMarketCount_obj.save()
+        except:
+            IntermediaryTableMarketCount.objects.create(project = self.project , source = self.market,directlyarrived = 0)
+        
+        
         if self.who_paid and self.paid:
             if self.who_paid.type == "C" :
                 try:
@@ -110,8 +137,6 @@ class ProjectKhamatCosts(models.Model):
                 except:
                     inPay.objects.create(project=self.project, giver=self.who_paid, project_khamat_costs_object=self, paid=self.paid)
         
-
-    
     def charge(self):
         return self.total_cost_for_this_khama - self.paid
     def __str__(self) :
@@ -123,6 +148,85 @@ class ProjectKhamatCosts(models.Model):
     class Meta:
         verbose_name_plural = ' خامات المشروع'
         verbose_name='  خامة '
+
+class IntermediaryTableMarketCount(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
+    source = models.ForeignKey(MarketSources, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " المورد") 
+    directlyarrived = models.IntegerField(verbose_name = " المدفوع",null=True,blank=True) 
+    file = models.FileField(upload_to='MarketCount_files/', null=True,blank=True,verbose_name = "   فاتورة ")
+    total_reserved = models.IntegerField(verbose_name = " اجمالى المستحق",null=True,blank=True,default = 0)
+    total_paid_until_now = models.IntegerField(verbose_name = " اجمالى المدفوع الى الان",null=True,blank=True,default = 0)
+    charge_reserved = models.IntegerField(verbose_name = " اجمالى باقى المستحق",null=True,blank=True,default = 0)
+    date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
+    
+    def save(self, *args, **kwargs):
+        MarketCount = apps.get_model('finishcount', 'MarketCount')
+        MarketCount.objects.create(project = self.project , source = self.source,directlyarrived = self.directlyarrived,file = self.file)
+        sum_deserved = 0
+        sum_paid_first_time = 0
+        sum_paid_later = 0
+        all_related_deserved = ProjectKhamatCosts.objects.filter(project = self.project , market = self.source)
+        for deserved in all_related_deserved:
+            sum_deserved += deserved.total_cost_for_this_khama
+            sum_paid_first_time += deserved.paid
+        
+        related_source_counts = MarketCount.objects.filter(project = self.project , source = self.source)
+        for sourcecount in related_source_counts:
+            sum_paid_later += sourcecount.directlyarrived
+        
+        self.total_reserved = sum_deserved
+        self.total_paid_until_now = sum_paid_first_time + sum_paid_later
+        self.charge_reserved = sum_deserved - sum_paid_first_time - sum_paid_later
+        super().save(*args, **kwargs)
+    
+    def __str__(self) :
+        if self.project:
+            return str(self.project.project_name)
+        else:
+            return '---'
+    class Meta:
+        verbose_name_plural = ' تخليص حسابات الموردين'
+        verbose_name='  تعامل '
+
+class IntermediaryTableWorkerCount(models.Model):
+    project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
+    worker = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "العامل" ,limit_choices_to={"type": "W"}) 
+    directlyarrived = models.IntegerField(verbose_name = " القيمة المراد دفعها",null=True,blank=True,default = 0)
+    file = models.FileField(upload_to='WorkerCount_files/', null=True,blank=True,verbose_name = "   فاتورة ")
+    total_reserved = models.IntegerField(verbose_name = " اجمالى المستحق",null=True,blank=True,default = 0)
+    total_paid_until_now = models.IntegerField(verbose_name = " اجمالى المدفوع الى الان",null=True,blank=True,default = 0)
+    charge_reserved = models.IntegerField(verbose_name = " اجمالى باقى المستحق",null=True,blank=True,default = 0)
+    date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
+    
+    def save(self, *args, **kwargs):
+        WorkerCount = apps.get_model('finishcount', 'WorkerCount')
+        WorkerCount.objects.create(project = self.project , worker = self.worker,directlyarrived = self.directlyarrived,file = self.file)
+        sum_deserved = 0
+        sum_paid_first_time = 0
+        sum_paid_later = 0
+        all_related_deserved = ProjectWorkersReserves.objects.filter(project = self.project , worker = self.worker)
+        for deserved in all_related_deserved:
+            sum_deserved += deserved.price
+            sum_paid_first_time += deserved.paid
+        
+        related_worker_counts = WorkerCount.objects.filter(project = self.project , worker = self.worker)
+        for workercount in related_worker_counts:
+            sum_paid_later += workercount.directlyarrived
+        
+        self.total_reserved = sum_deserved
+        self.total_paid_until_now = sum_paid_first_time + sum_paid_later
+        self.charge_reserved = sum_deserved - sum_paid_first_time - sum_paid_later
+        super().save(*args, **kwargs)
+    
+    def __str__(self) :
+        if self.project:
+            return str(self.project.project_name)
+        else:
+            return '---'
+    class Meta:
+        verbose_name_plural = ' تخليص حسابات العمال'
+        verbose_name='  تعامل '
+
 
 class ProjectWorkersReserves(models.Model):
     project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
@@ -143,10 +247,37 @@ class ProjectWorkersReserves(models.Model):
         else:
             return '---'
     charge.short_description = "   الباقى" 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        try:
+            IntermediaryTableWorkerCount_obj = IntermediaryTableWorkerCount.objects.get(project = self.project , worker = self.worker)
+            WorkerCount = apps.get_model('finishcount', 'WorkerCount')
+            sum_deserved = 0
+            sum_paid_first_time = 0
+            sum_paid_later = 0
+            all_related_deserved = ProjectWorkersReserves.objects.filter(project = self.project , worker = self.worker)
+            for deserved in all_related_deserved:
+                sum_deserved += deserved.price
+                sum_paid_first_time += deserved.paid
+            
+            related_worker_counts = WorkerCount.objects.filter(project = self.project , worker = self.worker)
+            for workercount in related_worker_counts:
+                sum_paid_later += workercount.directlyarrived
+            
+            IntermediaryTableWorkerCount_obj.total_reserved = sum_deserved
+            IntermediaryTableWorkerCount_obj.total_paid_until_now = sum_paid_first_time + sum_paid_later
+            IntermediaryTableWorkerCount_obj.charge_reserved = sum_deserved - sum_paid_first_time - sum_paid_later
+            IntermediaryTableWorkerCount_obj.save()
+        except:
+            IntermediaryTableWorkerCount.objects.create(project = self.project , worker = self.worker,directlyarrived = 0)
+        
+        
 
     class Meta:
         verbose_name_plural = '  مستحقات العاملين'
         verbose_name='  عمل '
+
+
 
 class Project(models.Model):
     project_name = models.CharField(verbose_name="اسم المشروع",default = "---", max_length=200)
@@ -172,6 +303,59 @@ class Project(models.Model):
     date_added = models.DateTimeField(verbose_name = " تاريخ الانشاء",auto_now_add=True,null=True,blank=True) 
     is_done = models.BooleanField(verbose_name = "  المشروع منتهى",default=False ,help_text = "اختيار هذا المربع (تظليلة بالازرق) يعنى ان هذا المشروع تم الانتهاء منه")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
+    
+    # next totalcharge is used only for filtering be debit and ndebit (كشف المديونيات )
+    def totalcharge(self):
+        DesignWork = apps.get_model('worksdata', 'DesignWork')
+        EngSupervision = apps.get_model('worksdata', 'EngSupervision')
+
+        obj = self
+        #------------------------------------
+        #  حساب اعمال التصميم
+        designworks = DesignWork.objects.filter(project = obj)
+        totaldesignworkscosts = 0
+        for work in designworks :
+            if work.workcost():
+                totaldesignworkscosts += work.workcost()
+        #------------------------------------
+        # حساب اعمال الاشراف              
+        engsupervisionworks = EngSupervision.objects.filter(project = obj)
+        totalengsupervisionworkscosts = 0
+        for work in engsupervisionworks :
+            if work.workcost():
+                totalengsupervisionworkscosts += work.workcost()
+        #------------------------------------
+        # تكاليف الخامات
+        total_khamat_cost = 0
+        khamat_costs = ProjectKhamatCosts.objects.filter(project = obj)
+        for cost in khamat_costs:
+            if cost.total_cost_for_this_khama:
+                total_khamat_cost = total_khamat_cost + cost.total_cost_for_this_khama 
+        #------------------------------------
+        # تكاليف المصنعيات
+        total_workersreserves_cost = 0
+        workersreserves_costs = ProjectWorkersReserves.objects.filter(project = obj)
+        for cost in workersreserves_costs:
+            if cost.price:
+                total_workersreserves_cost = total_workersreserves_cost + cost.price 
+        #------------------------------------
+        #الوارد المالى
+        inpaycosts = inPay.objects.filter(project = obj)
+        total_inpay_costs = 0
+        for inpay in inpaycosts :
+            if inpay.paid:
+                total_inpay_costs += inpay.paid
+        all_inpay_costs = total_inpay_costs
+        # all_inpay_costs = total_inpay_costs + obj.paiddirectlybyclient()
+        #------------------------------------
+        # باقى الحساب
+        # charge =0
+        total_charge = 0
+        if obj.discount:
+            total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost  + obj.discount
+        else:
+            total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost
+        return total_charge
     class Meta:
         verbose_name_plural = 'المشاريع'
         verbose_name = 'مشروع'

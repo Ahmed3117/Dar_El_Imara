@@ -77,6 +77,7 @@ def invoice(request, pk):
         total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost  + obj.discount
     else:
         total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost
+    
     #------------------------------------
     client = obj.client
     #------------------------------------

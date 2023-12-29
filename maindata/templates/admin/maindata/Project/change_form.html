@@ -13,9 +13,9 @@
         .vIntegerField{
             max-width : 50px !important;
         }
-        .vTextField{
+        {% comment %} .vTextField{
             max-width : 100px !important;
-        }
+        } {% endcomment %}
         .field-file{
             max-width : 160px !important;
         }
@@ -30,6 +30,7 @@
         for (var i = 0; i < all_total_cost_for_this_khama_elements_projectkhamatcosts.length; i++) {
         
             all_total_cost_for_this_khama_elements_projectkhamatcosts[i].disabled = true;
+            all_total_cost_for_this_khama_elements_projectkhamatcosts[i].style.border = 'none';
         
         }
         //expectedprojectcosts
@@ -37,9 +38,62 @@
         for (var i = 0; i < all_total_cost_for_this_khama_elements_expectedprojectcosts.length; i++) {
         
             all_total_cost_for_this_khama_elements_expectedprojectcosts[i].disabled = true;
+            all_total_cost_for_this_khama_elements_expectedprojectcosts[i].style.border = 'none';
         
         }
+
+
+        // id_intermediarytableworkercount_set-0-total_reserved
+        // id_intermediarytableworkercount_set-0-total_paid_until_now
+        // id_intermediarytableworkercount_set-0-charge_reserved
+        var all_intermediarytableworkercount_total_reserved_elements = document.querySelectorAll('[id^="id_intermediarytableworkercount_set-"][id*="-total_reserved"]');
+        var all_intermediarytableworkercount_total_paid_until_now_elements = document.querySelectorAll('[id^="id_intermediarytableworkercount_set-"][id*="-total_paid_until_now"]');
+        var all_intermediarytableworkercount_charge_reserved_elements = document.querySelectorAll('[id^="id_intermediarytableworkercount_set-"][id*="-charge_reserved"]');
+        for (var i = 0; i < all_intermediarytableworkercount_total_reserved_elements.length; i++) {
         
+            all_intermediarytableworkercount_total_reserved_elements[i].disabled = true;
+            all_intermediarytableworkercount_total_reserved_elements[i].style.border = 'none';
+            all_intermediarytableworkercount_total_paid_until_now_elements[i].disabled = true;
+            all_intermediarytableworkercount_total_paid_until_now_elements[i].style.border = 'none';
+            all_intermediarytableworkercount_charge_reserved_elements[i].disabled = true;
+            all_intermediarytableworkercount_charge_reserved_elements[i].style.border = 'none';
+        
+        }
+
+        // id_intermediarytableworkercount_set-0-directlyarrived
+        var all_intermediarytableworkercount_directlyarrived_elements = document.querySelectorAll('[id^="id_intermediarytableworkercount_set-"][id*="-directlyarrived"]');
+        for (var i = 0; i < all_intermediarytableworkercount_directlyarrived_elements.length; i++) {
+        
+            all_intermediarytableworkercount_directlyarrived_elements[i].value = 0;
+        
+        }
+
+        // id_intermediarytablemarketcount_set-0-total_reserved
+        // id_intermediarytablemarketcount_set-0-total_paid_until_now
+        // id_intermediarytablemarketcount_set-0-charge_reserved
+        var all_intermediarytablemarketcount_total_reserved_elements = document.querySelectorAll('[id^="id_intermediarytablemarketcount_set-"][id*="-total_reserved"]');
+        var all_intermediarytablemarketcount_total_paid_until_now_elements = document.querySelectorAll('[id^="id_intermediarytablemarketcount_set-"][id*="-total_paid_until_now"]');
+        var all_intermediarytablemarketcount_charge_reserved_elements = document.querySelectorAll('[id^="id_intermediarytablemarketcount_set-"][id*="-charge_reserved"]');
+        for (var i = 0; i < all_intermediarytablemarketcount_total_reserved_elements.length; i++) {
+        
+            all_intermediarytablemarketcount_total_reserved_elements[i].disabled = true;
+            all_intermediarytablemarketcount_total_reserved_elements[i].style.border = 'none';
+            all_intermediarytablemarketcount_total_paid_until_now_elements[i].disabled = true;
+            all_intermediarytablemarketcount_total_paid_until_now_elements[i].style.border = 'none';
+            all_intermediarytablemarketcount_charge_reserved_elements[i].disabled = true;
+            all_intermediarytablemarketcount_charge_reserved_elements[i].style.border = 'none';
+        
+        }
+
+        // id_intermediarytablemarketcount_set-0-directlyarrived
+        var all_intermediarytablemarketcount_directlyarrived_elements = document.querySelectorAll('[id^="id_intermediarytablemarketcount_set-"][id*="-directlyarrived"]');
+        for (var i = 0; i < all_intermediarytablemarketcount_directlyarrived_elements.length; i++) {
+        
+            all_intermediarytablemarketcount_directlyarrived_elements[i].value = 0;
+        
+        }
+
+
         // "expectedprojectcosts" "make select buttons of new raw take the same values of the previous one"
 
         $(document).on('formset:added', function(event, $row, formsetName) {

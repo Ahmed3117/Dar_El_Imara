@@ -37,11 +37,7 @@ class WorkerCount(models.Model):
     
     def charge(self):
         return (self.deservedforthisproject() - self.alreadypaidforthisproject())
-    # def save(self, *args, **kwargs):
-        
-    #     self.charge_reserved = self.charge()
-    #     super().save(*args, **kwargs)
-        
+
     deservedforthisproject.short_description = ' المستحق لهذا المشروع '
     alreadypaidforthisproject.short_description = ' المدفوع بالفعل لهذا المشروع '
     charge.short_description = ' الباقى '
@@ -53,6 +49,8 @@ class WorkerCount(models.Model):
     class Meta:
         verbose_name_plural = ' تخليص حسابات العمال'
         verbose_name='  تعامل '
+# جدول وسيط بين تلخيص حسابات العاملين وبين مستحقات العملين
+
 class MarketCount(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     source = models.ForeignKey(MarketSources, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " المورد") 

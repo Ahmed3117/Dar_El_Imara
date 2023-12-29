@@ -149,7 +149,7 @@ ADMIN_ORDERING = (
     ('maindata', ('Project','ExpectedProjectCosts','ProjectKhamatCosts','ProjectWorkersReserves', 'inPay','Coin')),
     ('userdata', ('User','MarketSources')),
     ('subdata', ('CategoryDetail','SubCategoryDetail','Khama')),
-    ('worksdata', ('DesignWork','EngSupervision','DesignWorkType')),
+    ('worksdata', ('DesignWork',)),
     ('finishcount', ('MarketCount', 'WorkerCount')),
     ('outerdeals', ('OutDeals','OfficeCosts')),
     ('inoutpay', ('MoneyWithDraw',)),

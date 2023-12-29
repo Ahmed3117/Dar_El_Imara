@@ -8,7 +8,7 @@ from django.shortcuts import redirect
 from django.db.models import Sum
 
 from inoutpay.models import MoneyWithDraw
-from .models import ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
+from .models import IntermediaryTableWorkerCount,IntermediaryTableMarketCount,ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
 from subdata.models import EmployeeCategory ,SubCategoryDetail,CategoryDetail
 from userdata.models import Employee, MarketSources,User
 from worksdata.models import DesignWork,EngSupervision
@@ -27,10 +27,10 @@ class UnpaidFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'depit':
-            unpaid_ids = [project.id for project in queryset if project.charge() > 0]
+            unpaid_ids = [project.id for project in queryset if project.totalcharge() > 0]
             return queryset.filter(id__in=unpaid_ids)
         if self.value() == 'notdepit':
-            paid_ids = [project.id for project in queryset if project.charge() <= 0]
+            paid_ids = [project.id for project in queryset if project.totalcharge() <= 0]
             return queryset.filter(id__in=paid_ids)
 
 class ExpectedProjectCostsAdmin(admin.ModelAdmin):
@@ -106,10 +106,17 @@ class MarketCountInlineAdmin(admin.TabularInline):
     extra = 0
     show_change_link = True
     # classes = ('collapse',)
-class WorkerCountInlineAdmin(admin.TabularInline):
-    model = WorkerCount
+class IntermediaryTableMarketCountInlineAdmin(admin.TabularInline):
+    model = IntermediaryTableMarketCount
     extra = 0
-    show_change_link = True
+    max_num = 0
+    # show_change_link = True
+    # classes = ('collapse',)
+class IntermediaryTableWorkerCountInlineAdmin(admin.TabularInline):
+    model = IntermediaryTableWorkerCount
+    extra = 0
+    max_num = 0
+    # show_change_link = True
     # classes = ('collapse',)
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -125,7 +132,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('is_done','project_name','client','details','printinvoice','coin','date_added')
     search_fields = ('client__name','client__code','project_name','project_address','coin__coin')
     list_filter = ('date_added','is_done',UnpaidFilter)
-    inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin,WorkerCountInlineAdmin,MarketCountInlineAdmin]
+    inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin,IntermediaryTableWorkerCountInlineAdmin,IntermediaryTableMarketCountInlineAdmin]
     change_list_template = 'admin/maindata/Project/change_list.html'
     autocomplete_fields = ('client',)
     # class Media:
