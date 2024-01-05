@@ -146,13 +146,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # "settings.py"
 ADMIN_ORDERING = (
-    ('maindata', ('Project','ExpectedProjectCosts','ProjectKhamatCosts','ProjectWorkersReserves', 'inPay','Coin')),
+    ('maindata', ('Project',)),
     ('userdata', ('User','MarketSources')),
     ('subdata', ('CategoryDetail','SubCategoryDetail','Khama')),
-    ('worksdata', ('DesignWork',)),
-    ('finishcount', ('MarketCount', 'WorkerCount')),
+    # ('worksdata', ('DesignWork',)),
+    # ('finishcount', ('MarketCount', 'WorkerCount')),
     ('outerdeals', ('OutDeals','OfficeCosts')),
-    ('inoutpay', ('MoneyWithDraw',)),
+    # ('inoutpay', ('MoneyWithDraw',)),
     ('companyinfo', ('CompanyInfo',)),
     ('auth', ('User', 'Group')),
     ('admin_interface', ('Theme', )),

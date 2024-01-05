@@ -308,8 +308,7 @@ class Project(models.Model):
     def totalcharge(self):
         DesignWork = apps.get_model('worksdata', 'DesignWork')
         EngSupervision = apps.get_model('worksdata', 'EngSupervision')
-
-        obj = self
+        obj = self 
         #------------------------------------
         #  حساب اعمال التصميم
         designworks = DesignWork.objects.filter(project = obj)
