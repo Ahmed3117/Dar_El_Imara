@@ -11,7 +11,7 @@ class User(models.Model):
     )
     type = models.CharField(verbose_name="النوع", choices=user_type, max_length=10, default="C", null=True, blank=True)
     name = models.CharField(verbose_name="الاسم", max_length=200, null=True, blank=True)
-    national_id = models.CharField(verbose_name="الرقم القومى", max_length=14, null=True, blank=True)
+    # national_id = models.CharField(verbose_name="الرقم القومى", max_length=14, null=True, blank=True)
     phone_number = models.CharField(verbose_name="رقم التليفون", max_length=20, null=True, blank=True)
     address = models.CharField(verbose_name="العنوان", max_length=100, null=True, blank=True)
     notes = models.CharField(verbose_name="ملاحظات", max_length=200, null=True, blank=True)
@@ -39,6 +39,7 @@ class User(models.Model):
                 self.code = f"W{year}{month}{day}{random_numbers}"
 
         super().save(*args, **kwargs)
+    
     class Meta:
         verbose_name_plural = 'المستخدمين'
         verbose_name = 'مستخدم'

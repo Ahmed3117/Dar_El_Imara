@@ -37,15 +37,15 @@ def invoice(request, pk):
     designworks = DesignWork.objects.filter(project = obj)
     totaldesignworkscosts = 0
     for work in designworks :
-        if work.workcost():
-            totaldesignworkscosts += work.workcost()
+        if work.work_cost:
+            totaldesignworkscosts += work.work_cost
     #------------------------------------
     # حساب اعمال الاشراف              
     engsupervisionworks = EngSupervision.objects.filter(project = obj)
     totalengsupervisionworkscosts = 0
     for work in engsupervisionworks :
-        if work.workcost():
-            totalengsupervisionworkscosts += work.workcost()
+        if work.work_cost:
+            totalengsupervisionworkscosts += work.work_cost
     #------------------------------------
     # تكاليف الخامات
     total_khamat_cost = 0
@@ -157,6 +157,7 @@ def invoice(request, pk):
     #-----------------------------------
     context = {
             'project_id' : pk,
+            'project' : obj,
             'project_expected_costs_list' : project_expected_costs_list,
             'totaldesignworkscosts' : totaldesignworkscosts,
             'totalengsupervisionworkscosts' : totalengsupervisionworkscosts,
@@ -175,6 +176,7 @@ def invoice(request, pk):
             'companyinfo' : companyinfo,
         }
     return render(request,'maindata/invoice.html' ,context)
+
 def addcostspage(request, pk):
     project = Project.objects.get(id = pk)
     main_categories = CategoryDetail.objects.all()
@@ -218,13 +220,21 @@ def get_project_expected_costs(request,subcategory_id):
     costs_json = serializers.serialize('json', costs, fields=('workers_reserves', 'workers_reserves_cost', 'khama', 'total_cost_for_this_khama'))
     return JsonResponse(costs_json, safe=False)
 
-
-
-
-
-
-
-
+def gettotaldata(request, project_pk):
+    project = Project.objects.get(pk=project_pk)
+    # الوارد المالى
+    inpaycosts = inPay.objects.filter(project = project)
+    total_inpay_costs = 0
+    for inpay in inpaycosts :
+        if inpay.paid:
+            total_inpay_costs += inpay.paid
+    
+    data = {
+        'total_inpay_costs': total_inpay_costs, 
+        # 'total_khamat_costs': 2000, 
+        # 'key3': 'value3', 
+    }
+    return JsonResponse(data)
 
 
 

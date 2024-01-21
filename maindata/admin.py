@@ -120,6 +120,21 @@ class IntermediaryTableWorkerCountInlineAdmin(admin.TabularInline):
     # classes = ('collapse',)
 
 class ProjectAdmin(admin.ModelAdmin):
+    
+    # # to filter the project objects according to the current logginned user
+    # # don't forget to add user field for 
+    # def get_queryset(self, request):
+    #     qs = super().get_queryset(request)
+    #     return qs.filter(user=request.user)
+    # # to make user field of Project model to be the current logginned user as default
+    # def save_model(self, request, obj, form, change):
+    #     if not change:
+    #         obj.user = request.user
+    #     super().save_model(request, obj, form, change)
+        
+        
+        
+        
     # def get_queryset(self, request):
     #     # Customize the queryset here
     #     # For example, let's say you want to only show objects with a specific attribute value
@@ -135,6 +150,7 @@ class ProjectAdmin(admin.ModelAdmin):
     inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin,IntermediaryTableWorkerCountInlineAdmin,IntermediaryTableMarketCountInlineAdmin]
     change_list_template = 'admin/maindata/Project/change_list.html'
     autocomplete_fields = ('client',)
+    ordering = ('is_done','date_added')
     # class Media:
     #     js = ('/static/admin/js/custom_project_costs_inline.js',)
     # form = ClientForm
@@ -215,107 +231,7 @@ class ProjectAdmin(admin.ModelAdmin):
         url = reverse('maindata:addcostspage', args=[project_id])
         return format_html('<a class="button rounded " href="{}">اضف تكاليف </a>', url)
 
-    # def projectinfo(self, obj):
-    #     project_id = obj.id
-    #     #------------------------------------
-    #     #  حساب اعمال التصميم
-    #     designworks = DesignWork.objects.filter(project = obj)
-    #     totaldesignworkscosts = 0
-    #     for work in designworks :
-    #         totaldesignworkscosts += work.workcost()
-    #     #------------------------------------
-    #     # حساب اعمال الاشراف
-    #     engsupervisionworks = EngSupervision.objects.filter(project = obj)
-    #     totalengsupervisionworkscosts = 0
-    #     for work in engsupervisionworks :
-    #         totalengsupervisionworkscosts += work.workcost()
-    #     #------------------------------------
-    #     # تكاليف الخامات
-    #     total_khamat_cost = 0
-    #     khamat_costs = ProjectKhamatCosts.objects.filter(project = obj)
-    #     for cost in khamat_costs:
-    #         if cost.total_cost_for_this_khama:
-    #             total_khamat_cost = total_khamat_cost + cost.total_cost_for_this_khama
-    #     #------------------------------------
-    #     # تكاليف المصنعيات
-    #     total_workersreserves_cost = 0
-    #     workersreserves_costs = ProjectWorkersReserves.objects.filter(project = obj)
-    #     for cost in workersreserves_costs:
-    #         if cost.price:
-    #             total_workersreserves_cost = total_workersreserves_cost + cost.price
-    #     #------------------------------------
-    #     #الوارد المالى
-    #     inpaycosts = inPay.objects.filter(project = obj)
-    #     total_inpay_costs = 0
-    #     for inpay in inpaycosts :
-    #         total_inpay_costs += inpay.paid
-    #     all_inpay_costs = total_inpay_costs
-    #     # all_inpay_costs = total_inpay_costs + obj.paiddirectlybyclient()
-    #     #------------------------------------
-    #     # باقى الحساب
-    #     # charge =0
-    #     total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost + obj.discount
-    #     #------------------------------------
-    #     #########################################################################################
-    #     #########################################################################################
-    #     #------------------------------------
-    #     # تكاليف دفعها العميل
-    #     # paid_by_client = ProjectCosts.objects.filter(project = self , who_paid = 'c')
-    #     # total_paid_by_client = 0
-    #     # for paid in paid_by_client :
-    #     #     total_paid_by_client += paid.ammount
-    #     #----------------------------------------
-    #     project_workersreserves = ProjectWorkersReserves.objects.filter(project = obj).values('worker').annotate(total_price = Sum('price'),total_paid = Sum('paid'))
-    #     workersreserves = []
-    #     for inst in project_workersreserves:
-    #         worker_data = []
-    #         charge = 0
-    #         total_directly_paid = 0
-    #         worker = User.objects.get(id = inst['worker'])
-    #         worker_job = Employee.objects.get(user = worker).category.category
-    #         directly_paid_costs = WorkerCount.objects.filter(project = obj,worker = worker)
-    #         for cost in directly_paid_costs:
-    #             if cost.directlyarrived:
-    #                 total_directly_paid = total_directly_paid + cost.directlyarrived
-    #         worker_data.append(worker.name)
-    #         worker_data.append(worker_job)
-    #         worker_data.append(inst['total_price'])
-    #         all_paid = inst['total_paid'] + total_directly_paid
-    #         worker_data.append(all_paid)
-    #         worker_data.append(inst['total_price'] - all_paid)
-    #         workersreserves.append(worker_data)
-    #     #----------------------------------------
-    #     project_markets_reserves = ProjectKhamatCosts.objects.filter(project = obj).values('market').annotate(total_price = Sum('total_cost_for_this_khama'),total_paid = Sum('paid'))
-    #     marketsreserves = []
-    #     for inst in project_markets_reserves:
-    #         market_data = []
-    #         charge = 0
-    #         total_directly_paid = 0
-    #         if inst['market']:
-    #             market = MarketSources.objects.get(id = inst['market'])
-    #             directly_paid_costs = MarketCount.objects.filter(project = obj,source = market)
-    #             for cost in directly_paid_costs:
-    #                 if cost.directlyarrived:
-    #                     total_directly_paid = total_directly_paid + cost.directlyarrived
-    #             market_data.append(market.sourcemarket)
-    #             market_data.append(inst['total_price'])
-    #             all_paid = inst['total_paid'] + total_directly_paid
-    #             market_data.append(all_paid)
-    #             market_data.append(inst['total_price'] - all_paid)
-    #             marketsreserves.append(market_data)
-
-    #     modal_html = render_to_string('admin/maindata/project/projectinfo.html', {
-    #         'project_id' : project_id,
-    #         'totaldesignworkscosts' : totaldesignworkscosts,
-    #         'totalengsupervisionworkscosts' : totalengsupervisionworkscosts,
-    #         'total_khamat_cost' : total_khamat_cost,
-    #         'total_workersreserves_cost' : total_workersreserves_cost,
-    #         'all_inpay_costs' : all_inpay_costs,
-    #         'total_charge' : total_charge,
-    #         'workersreserves' : workersreserves,
-    #         'marketsreserves' : marketsreserves,
-    #     })
-    #     return format_html(modal_html)
+    
 
     designworksdetails.short_description = '  اعمال التصميم '
     projectkhamatcosts.short_description = 'تكاليف الخامات'

@@ -25,7 +25,15 @@
 
 
     <script>
+        //work_cost
+        var all_designworks_work_cost = document.querySelectorAll('[id^="id_designwork_set-"][id*="-work_cost"]');
+        for (var i = 0; i < all_designworks_work_cost.length; i++) {
         
+            all_designworks_work_cost[i].disabled = true;
+            all_designworks_work_cost[i].style.border = 'none';
+        
+        }
+        //projectkhamatcosts
         var all_total_cost_for_this_khama_elements_projectkhamatcosts = document.querySelectorAll('[id^="id_projectkhamatcosts_set-"][id*="-total_cost_for_this_khama"]');
         for (var i = 0; i < all_total_cost_for_this_khama_elements_projectkhamatcosts.length; i++) {
         
@@ -317,8 +325,6 @@
 
 
 
-
-
     <script>
         function showCategorySubs(rowId, type, subCategoryDetailId) {
             if (type) {
@@ -379,6 +385,138 @@
 
 
     </script>
+
+
+
+
+    <script>
+        
+        // initially , hide all tabs except 'المشروع'
+        document.getElementById('tablink-ml-ltsmym').style.display = 'none'; // 'اعمال التصميم'
+        document.getElementById('tablink-hsb-lshrf-lhnds').style.display = 'none'; // 'اعمال الاشراف'
+        document.getElementById('tablink-lmsrwft-lmtwq-llmshrw').style.display = 'none'; // 'المصروفات المتوقعة'
+        document.getElementById('tablink-khmt-lmshrw').style.display = 'none'; // 'خامات المشروع'
+        document.getElementById('tablink-msthqt-l-mlyn').style.display = 'none'; // 'مستحقات العاملين'
+        document.getElementById('tablink-lwrd-lml').style.display = 'none'; // 'الوارد المالى'
+        document.getElementById('tablink-tkhlys-hsbt-l-ml').style.display = 'none'; // 'تخليص حسابات العمال'
+        document.getElementById('tablink-tkhlys-hsbt-lmwrdyn').style.display = 'none'; // 'تخليص حسابات الموردين'
+        //////////////////////////////////////////////////////////////////////////////
+        // call the two checkboxes 
+        let isdesignwork = document.getElementById('id_isdesignwork');
+        let issupervision = document.getElementById('id_issupervision');
+        //////////////////////////////////////////////////////////////////////////////
+        if(isdesignwork.checked) {
+            document.getElementById('tablink-ml-ltsmym').style.display = 'block'; // 'اعمال التصميم'
+            document.getElementById('tablink-lwrd-lml').style.display = 'block'; // 'الوارد المالى'
+        } 
+
+        if(issupervision.checked) {
+            document.getElementById('tablink-hsb-lshrf-lhnds').style.display = 'block'; // 'اعمال الاشراف'
+            document.getElementById('tablink-lmsrwft-lmtwq-llmshrw').style.display = 'block'; // 'المصروفات المتوقعة'
+            document.getElementById('tablink-khmt-lmshrw').style.display = 'block'; // 'خامات المشروع'
+            document.getElementById('tablink-msthqt-l-mlyn').style.display = 'block'; // 'مستحقات العاملين'
+            document.getElementById('tablink-lwrd-lml').style.display = 'block'; // 'الوارد المالى'
+            document.getElementById('tablink-tkhlys-hsbt-l-ml').style.display = 'block'; // 'تخليص حسابات العمال'
+            document.getElementById('tablink-tkhlys-hsbt-lmwrdyn').style.display = 'block'; // 'تخليص حسابات الموردين'
+        } 
+
+        document.getElementById('id_isdesignwork').addEventListener('change', function() {
+            if(this.checked) {
+                document.getElementById('tablink-ml-ltsmym').style.display = 'block'; // 'اعمال التصميم'
+                document.getElementById('tablink-lwrd-lml').style.display = 'block'; // 'الوارد المالى'
+            } else {
+                document.getElementById('tablink-ml-ltsmym').style.display = 'none'; // 'اعمال التصميم'
+                document.getElementById('tablink-lwrd-lml').style.display = 'none'; // 'الوارد المالى'
+                if(issupervision.checked) {
+                    document.getElementById('tablink-lwrd-lml').style.display = 'block'; // 'الوارد المالى'
+                }
+            }
+        });
+        
+        document.getElementById('id_issupervision').addEventListener('change', function() {
+            if(this.checked) {
+                document.getElementById('tablink-hsb-lshrf-lhnds').style.display = 'block'; // 'اعمال الاشراف'
+                document.getElementById('tablink-lmsrwft-lmtwq-llmshrw').style.display = 'block'; // 'المصروفات المتوقعة'
+                document.getElementById('tablink-khmt-lmshrw').style.display = 'block'; // 'خامات المشروع'
+                document.getElementById('tablink-msthqt-l-mlyn').style.display = 'block'; // 'مستحقات العاملين'
+                document.getElementById('tablink-lwrd-lml').style.display = 'block'; // 'الوارد المالى'
+                document.getElementById('tablink-tkhlys-hsbt-l-ml').style.display = 'block'; // 'تخليص حسابات العمال'
+                document.getElementById('tablink-tkhlys-hsbt-lmwrdyn').style.display = 'block'; // 'تخليص حسابات الموردين'
+            } else {
+                document.getElementById('tablink-hsb-lshrf-lhnds').style.display = 'none'; // 'اعمال الاشراف'
+                document.getElementById('tablink-lmsrwft-lmtwq-llmshrw').style.display = 'none'; // 'المصروفات المتوقعة'
+                document.getElementById('tablink-khmt-lmshrw').style.display = 'none'; // 'خامات المشروع'
+                document.getElementById('tablink-msthqt-l-mlyn').style.display = 'none'; // 'مستحقات العاملين'
+                document.getElementById('tablink-lwrd-lml').style.display = 'none'; // 'الوارد المالى'
+                document.getElementById('tablink-tkhlys-hsbt-l-ml').style.display = 'none'; // 'تخليص حسابات العمال'
+                document.getElementById('tablink-tkhlys-hsbt-lmwrdyn').style.display = 'none'; // 'تخليص حسابات الموردين'
+                if(isdesignwork.checked) {
+                    document.getElementById('tablink-lwrd-lml').style.display = 'block'; // 'الوارد المالى'
+                }
+            }
+        });
+
+    </script>
+
+
+    {% comment %} <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let selectElement = document.getElementById('id_client');
+            let select2Element = document.getElementById('select2-id_client-container');
+            console.log(selectElement.value);
+            console.log(select2Element)
+            selectElement.addEventListener('change', function() {
+                console.log('333333333333333333333333333333');
+                let currentValue = this.value;
+                console.log(currentValue);
+                console.log('333333333333333333333333333333');
+            });
+
+        });
+    
+    </script> {% endcomment %}
+
+
+<script>
+
+
+
+    fetch('/gettotaldata/{{ original.pk }}/')
+        .then(response => response.json())
+        .then(data => {
+                let newDiv = document.createElement("div");
+                newDiv.style.marginBottom  = '10px';
+
+                // Create two span elements
+                let span1 = document.createElement("span");
+                let span2 = document.createElement("span");
+                span1.style.color  = 'red';
+                span2.style.color  = 'blue';
+                // Add some text to the span elements
+                span1.textContent = "مجموع الوارد حتى الان : ";
+                span2.textContent = data['total_inpay_costs'];
+
+                // Append the spans to the new div
+                newDiv.appendChild(span1);
+                newDiv.appendChild(span2);
+
+                // Get the div with id "tabcontent-lwrd-lml"
+                let parentDiv = document.getElementById("tabcontent-lwrd-lml");
+
+                // Append the new div to the top of the parent div
+                parentDiv.insertBefore(newDiv, parentDiv.firstChild);
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+    });
+
+
+
+</script>
+
+
+
+
 
 {% comment %} <script>
 const workercount_tabcontent = document.getElementById("tabcontent-tkhlys-hsbt-l-ml");

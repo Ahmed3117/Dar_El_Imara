@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
-from .views import GetCategoriesView,GetCategoryWorkers, addmaincategory, addprojectcost, addsubcategory, get_project_expected_costs, invoice,GetCategorySubs,addcostspage
+from .views import GetCategoriesView,GetCategoryWorkers, addmaincategory, addprojectcost, addsubcategory, get_project_expected_costs, gettotaldata, invoice,GetCategorySubs,addcostspage
 app_name = 'maindata'
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path('addsubcategory/<int:project_pk>/<int:main_category_pk>/', addsubcategory, name='addsubcategory'),
     path('addprojectcost/<int:project_pk>/<int:main_category_pk>/<int:sub_category_pk>/', addprojectcost, name='addprojectcost'),
     path('get_project_expected_costs/<int:subcategory_id>/', get_project_expected_costs, name='get_project_expected_costs'),
+    path('gettotaldata/<int:project_pk>/', gettotaldata, name='gettotaldata'),
     #-----------------------------------------------
     # views to customize projectcosts of admin panel
     path('get_categories/', GetCategoriesView.as_view(), name='get_categories'),

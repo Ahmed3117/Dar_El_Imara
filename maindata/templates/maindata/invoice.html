@@ -6,47 +6,41 @@
     body{
         color:#633c0f!important;
     }
-.page-header {
-    margin: 0 0 1rem;
-}
+    .page-header {
+        margin: 0 0 1rem;
+    }
 
-.brc-default-l1 {
-    border-color: #dce9f0!important;
-}
+    .brc-default-l1 {
+        border-color: #dce9f0!important;
+    }
 
-.text-grey-m2 {
-    color: #dce9f0!important;
-}
+    .text-grey-m2 {
+        color: #dce9f0!important;
+    }
 
-.pb-25, .py-25 {
-    padding: .5rem!important;
-}
+    .pb-25, .py-25 {
+        padding: .5rem!important;
+    }
 
-.bgc-default-tp1 {
-    background-color: #497d85!important;
-}
-.bgm {
-    background-color: #d87606!important;
-}
-.bgc-default-l4, .bgc-h-default-l4:hover {
-    background-color: #f3f8fa!important;
-}
-.btn-light {
-    color: #757984;
-    background-color: #a8b0c9;
-    border-color: #dddfe4;
-}
+    .bgc-default-tp1 {
+        background-color: #497d85!important;
+    }
+    .bgm {
+        background-color: #d87606!important;
+    }
+    .bgc-default-l4, .bgc-h-default-l4:hover {
+        background-color: #f3f8fa!important;
+    }
+    .btn-light {
+        color: #757984;
+        background-color: #a8b0c9;
+        border-color: #dddfe4;
+    }
 
-a {
-    text-decoration: none;
-}
+    a {
+        text-decoration: none;
+    }
 </style>
-
-
-
-
-
-
 
 
 <style>
@@ -120,14 +114,27 @@ a {
                         </div>
                         <div class="col-9 align-self-start d-sm-flex justify-content-end">
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox0"> اجمالى المشروع 
+                            {% if project_expected_costs_list.0 %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox1"> تكاليف متوقعة
+                            {% endif %}
+                            {% if khamat_costs.0 %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox2"> الخامات الفعلية
+                            {% endif %}
+                            {% if workersreserves.0 %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox3">مستحقات العاملين
+                            {% endif %}
+                            {% if marketsreserves.0 %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox4">مستحقات الموردين
-                            
+                            {% endif %}
+                            {% comment %} {% if inpaycosts.0 %} {% endcomment %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox5">الوارد المالى
+                            {% comment %} {% endif %} {% endcomment %}
+                            {% if designworks.0 %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox6"> اعمال التصميم
+                            {% endif %}
+                            {% if engsupervisionworks.0 %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox7"> الاشراف (التكاليف)
+                            {% endif %}
                             <input type="checkbox" class="checkbox m-2" checked id="checkbox8">الكل
                         </div>
                     </div>
@@ -177,34 +184,49 @@ a {
                             <div >
 
                                     
-
+                                    {% comment %} اجمالى المشروع  {% endcomment %}
                                     <div class="box" id="box1">  
                                         <div class="row text-white bgc-default-tp1 ">
                                             
                                             <div class="col-2 col-sm-2" style="background-color: #d87606">اجمالى المشروع (مج)</div>
+                                            {% if designworks.0 %}
                                             <div class="col-2 col-sm-2"> اعمال التصميم</div>
+                                            {% endif %}
+                                            {% if engsupervisionworks.0 %}
                                             <div class="d-none d-sm-block col-2 col-sm-2"> اعمال الاشراف </div>
+                                            {% endif %}
+                                            {% if khamat_costs.0 %}
                                             <div class="d-none d-sm-block col-1 col-sm-1"> الخامات</div>
+                                            {% endif %}
+                                            {% if workersreserves.0 %}
                                             <div class="d-none d-sm-block col-1 col-sm-1"> المصنعيات</div>
+                                            {% endif %}
                                             <div class="col-2 col-sm-2">الوارد المالى</div>
-                                            <div class="col-2 col-sm-2" tooltip = "lllllll">  باقى الحساب (المتبقى على العميل)</div>
+                                            <div class="col-2 col-sm-2" tooltip = "lllllll">المتبقى فى خزينة المشروع</div>
                                         </div>
                                         <div class="text-95 text-secondary-d3">
                                             <div class="row mb-2 mb-sm-0 py-25">
                                                 <div class="col-2 col-sm-2"></div>
+                                                {% if designworks.0 %}
                                                 <div class="col-2 col-sm-2">{{totaldesignworkscosts}}</div>
+                                                {% endif %}
+                                                {% if engsupervisionworks.0 %}
                                                 <div class="d-none d-sm-block col-2 col-sm-2">{{totalengsupervisionworkscosts}}</div>
+                                                {% endif %}
+                                                {% if khamat_costs.0 %}
                                                 <div class="d-none d-sm-block col-1 col-sm-1">{{total_khamat_cost}}</div>
+                                                {% endif %}
+                                                {% if workersreserves.0 %}
                                                 <div class="d-none d-sm-block col-1 col-sm-1">{{total_workersreserves_cost}}</div>
+                                                {% endif %}
                                                 <div class="col-2 col-sm-2">{{all_inpay_costs}}</div>
                                                 <div class="col-2 col-sm-2">{{total_charge}}</div>
-                    
-                    
                                             </div>
                                         </div>
                                     
                                     </div>
-
+                                    {% if project_expected_costs_list.0 %}
+                                    {% comment %} التكاليف المتوقعة (مج) {% endcomment %}
                                     <div class="box" id="box0">  
                                         <div class="row text-white bgc-default-tp1 ">
                                             
@@ -234,7 +256,9 @@ a {
                                         {% endfor %}
                                     
                                     </div>
-
+                                    {% endif %}
+                                    {% if khamat_costs.0 %}
+                                    {% comment %} الخامات الفعلية (مج) {% endcomment %}
                                     <div class="box" id="box7">  
                                         
                                         <div class="row text-white bgc-default-tp1 ">
@@ -279,7 +303,9 @@ a {
                         
                                             </div>
                                     </div>
-
+                                    {% endif %}
+                                    {% if workersreserves.0 %}
+                                    {% comment %} مستحقات العاملين (مج) {% endcomment %}
                                     <div class="box" id="box2">  
                                         
                                         <div class="row text-white bgc-default-tp1 ">
@@ -312,7 +338,9 @@ a {
                         
                                             </div>
                                     </div>
-
+                                    {% endif %}
+                                    {% if marketsreserves.0 %}
+                                    {% comment %} مستحقات الموردين (مج) {% endcomment %}
                                     <div class="box" id="box6">  
                                         
                                         <div class="row text-white bgc-default-tp1 ">
@@ -343,7 +371,9 @@ a {
                         
                                             </div>
                                     </div>
-
+                                    {% endif %}
+                                    {% comment %} {% if inpaycosts.0 %} {% endcomment %}
+                                    {% comment %} الوارد المالى (مج) {% endcomment %}
                                     <div class="box" id="box3">  
                                         <div class="row text-white bgc-default-tp1 ">
                                             
@@ -378,7 +408,9 @@ a {
                         
                                             </div>
                                     </div>
-                                    
+                                    {% comment %} {% endif %} {% endcomment %}
+                                    {% if designworks.0 %}
+                                    {% comment %} اعمال التصميم (مج) {% endcomment %}
                                     <div class="box" id="box4">  
                                         <div class="row text-white bgc-default-tp1 ">
                                             
@@ -405,7 +437,7 @@ a {
                                                     {% endif %}
                                                     
                                                     <div class="d-none d-sm-block col-3 col-sm-3">{{designwork.ammount}}</div>
-                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{designwork.workcost}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{designwork.work_cost}}</div>
                                                 </div>
                                                 {% empty %}
                                                 <div class="row mb-2 mb-sm-0 py-25">
@@ -417,7 +449,9 @@ a {
                         
                                             </div>
                                     </div>
-                                    
+                                    {% endif %}
+                                    {% if engsupervisionworks.0 %}
+                                    {% comment %} الاشراف (التكاليف) {% endcomment %}
                                     <div class="box" id="box5">  
                                         <div class="row text-white bgc-default-tp1 ">
                                             
@@ -440,7 +474,7 @@ a {
                                                     <div class="d-none d-sm-block col-3 col-sm-3">مقطعية</div>
                                                     {% endif %}
                                                     <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.ammount}}</div>
-                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.workcost}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.work_cost}}</div>
                                                 </div>
                                                 {% empty %}
                                                 <div class="row mb-2 mb-sm-0 py-25">
@@ -452,6 +486,7 @@ a {
                         
                                             </div>
                                     </div>
+                                    {% endif %}
 
                                     <div class="row" style="background-color: #10626F;">
                                             <div class="col align-self-start d-sm-flex justify-content-start">
@@ -527,7 +562,9 @@ a {
             box.style.display = selectDeselectAll.checked ? 'block' : 'none';
           });
         });
-      </script>
+    </script>
+
+
 
 
 

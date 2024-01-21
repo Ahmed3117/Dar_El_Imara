@@ -21,8 +21,8 @@ class EmployeeInlineAdmin(admin.TabularInline):
     # classes = ('collapse',)
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('name','type','national_id', 'phone_number', 'address', 'code')
-    search_fields = ('type', 'name','type', 'national_id', 'phone_number', 'address', 'code')
+    list_display = ('name','type', 'phone_number', 'address', 'code')
+    search_fields = ('type', 'name','type', 'phone_number', 'address', 'code')
     list_filter = ('type',)
     inlines = [EmployeeInlineAdmin,]
     class Media:

@@ -28,26 +28,36 @@ class DesignWork(models.Model):
     account_way = models.CharField(verbose_name="نوع الحسبة", choices=accountway, max_length=10, default="mitr", blank=True,help_text ="اختيار بالمتر معناه ان سيتم احتساب سعر التصميم عن طريق ضرب الكمية فى سعر المتر الواحد للشغلانة , اختيار بالوحده يعنى سعر التصميم يساوى ضرب الكمية فى سعر الوحدة للشغلانة , اختيار مقطعية يعنى سعر التصميم يساوى الكمية مباشرة")
     ammount = models.IntegerField(verbose_name="الكمية", default=0, null=True, blank=True)
     date_added = models.DateTimeField(verbose_name="تاريخ الاضافة", auto_now_add=True, null=True, blank=True)
-    work_cost = models.IntegerField(verbose_name=" المجموع", default=0, editable=False, null=True, blank=True)
+    work_cost = models.IntegerField(verbose_name=" المجموع", default=0, null=True, blank=True)
     description = models.CharField(verbose_name=" وصف", max_length=1000,null=True, blank=True)
     file = models.FileField(upload_to='files/', null=True,blank=True,verbose_name = "   ملف ")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     
-    def workcost(self):
+    def workcost(self,theammount):
         try:
             if self.account_way == 'direct':
-                return self.ammount 
+                return theammount 
             if self.account_way == 'mitr':
-                return self.ammount * self.worktype.mitr_price
+                return theammount * self.worktype.mitr_price
             if self.account_way == 'unit':
-                return self.ammount * self.worktype.unit_price
+                return theammount * self.worktype.unit_price
         except:
             return 0
 
     def save(self, *args, **kwargs):
-        # super(SellProcess, self).save(*args, **kwargs)
-        self.work_cost = self.workcost()
-        super(DesignWork, self).save(*args, **kwargs)
+        if self.pk is not None:
+            olddesignwork = DesignWork.objects.get(id = self.pk)
+            oldworkcost = olddesignwork.work_cost
+            oldworktype = olddesignwork.worktype
+            oldammount = olddesignwork.ammount
+            super(DesignWork, self).save(*args, **kwargs)
+            newammount = self.ammount
+            difference_between_ammounts = newammount - oldammount
+            self.work_cost = oldworkcost + self.workcost(difference_between_ammounts)
+            super(DesignWork, self).save(*args, **kwargs)
+        else:
+            self.work_cost = self.workcost(self.ammount)
+            super(DesignWork, self).save(*args, **kwargs)
 
     def __str__(self):
         try:

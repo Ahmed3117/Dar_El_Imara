@@ -1,0 +1,37 @@
+{% extends "admin/index.html" %}
+{% load static %}
+
+{% block extrahead %}
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            shortcuts_div = document.getElementById('content-related')
+            shortcuts_div.innerHTML = `
+            <div class="app-maindata module " style="width:500px;">
+                <table>
+                <caption>
+                    <span class="section" style=" font-weight:bold; font-size:20px;"> اختصارات</span>
+                </caption>
+                    <tbody>
+                        <tr class="model-project">
+                        <th scope="row"><a style=" font-weight:bold; font-size:17px;color:red;" href="/admin/maindata/project/?is_done__exact=0">  المشاريع الجارية</a></th>
+                        {% comment %} <td><a href="/admin/maindata/project/add/" class="addlink">أضف</a></td>
+                        <td><a href="/admin/maindata/project/" class="changelink">تعديل</a></td> {% endcomment %}
+                        </tr>
+                        <tr class="model-project">
+                        <th scope="row"><a style=" font-weight:bold; font-size:17px;color:red;" href="/admin/maindata/project/add/">  اضف  مشروع</a></th>
+                        </tr>
+                        <tr class="model-project">
+                        <th scope="row"><a style=" font-weight:bold; font-size:17px;color:red;" href="/admin/maindata/inpay/add/">  اضف مبلغ مالى</a></th>
+                        </tr>
+                        <tr class="model-project">
+                        <th scope="row"><a style=" font-weight:bold; font-size:17px;color:red;" href="/admin/userdata/user/add/">  اضف عميل </a></th>
+                        </tr>
+                </tbody></table>
+            </div>
+            `
+            user_tools = document.getElementById('user-tools')
+            
+            // 
+        });
+    </script>
+{% endblock %}

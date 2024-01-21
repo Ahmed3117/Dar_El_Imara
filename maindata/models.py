@@ -10,6 +10,7 @@ from userdata.models import User,Employee,MarketSources
 # from worksdata.models import DesignWorkType
 # from inoutpay.models import inPay
 from django.apps import apps
+from django.contrib.auth.models import User as MainUser
 
 class Coin(models.Model):
     coin = models.CharField(verbose_name=" اسم العملة", max_length=200, null=True, blank=True) 
@@ -40,8 +41,6 @@ class inPay(models.Model):
             return str(self.paid)
         else:
             return '---'
-    
-    
     class Meta:
         verbose_name_plural = ' الوارد المالى'
         verbose_name='  دفعة مالية'
@@ -227,7 +226,6 @@ class IntermediaryTableWorkerCount(models.Model):
         verbose_name_plural = ' تخليص حسابات العمال'
         verbose_name='  تعامل '
 
-
 class ProjectWorkersReserves(models.Model):
     project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     main_category_detail = models.ForeignKey(CategoryDetail, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند اساسى") 
@@ -277,12 +275,13 @@ class ProjectWorkersReserves(models.Model):
         verbose_name_plural = '  مستحقات العاملين'
         verbose_name='  عمل '
 
-
-
 class Project(models.Model):
+    # user=models.ForeignKey(MainUser,on_delete=models.CASCADE,null=True,blank=True,editable = False)
     project_name = models.CharField(verbose_name="اسم المشروع",default = "---", max_length=200)
-    project_address = models.CharField(verbose_name=" عنوان المشروع", max_length=200, null=True, blank=True)
     client = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="عميل",limit_choices_to={"type": "C"})
+    project_address = models.CharField(verbose_name=" عنوان المشروع", max_length=200, null=True, blank=True,help_text = "ان ترك خاليا سيأخذ عنوان العميل عند الحفظ")
+    isdesignwork = models.BooleanField(default=False,verbose_name="المشروع يتضمن اعمال تصميم ؟ ")
+    issupervision = models.BooleanField(default=False,verbose_name="المشروع يتضمن اعمال اشراف ؟")
     coin = models.ForeignKey(Coin,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="عملة التعامل",help_text = "تعنى ان جميع الحسابات والارقام الحسابية المسجلة فى هذا المشروع هى بهذه العمله")
     
     # engineers = models.ManyToManyField(
@@ -314,15 +313,15 @@ class Project(models.Model):
         designworks = DesignWork.objects.filter(project = obj)
         totaldesignworkscosts = 0
         for work in designworks :
-            if work.workcost():
-                totaldesignworkscosts += work.workcost()
+            if work.work_cost:
+                totaldesignworkscosts += work.work_cost
         #------------------------------------
         # حساب اعمال الاشراف              
         engsupervisionworks = EngSupervision.objects.filter(project = obj)
         totalengsupervisionworkscosts = 0
         for work in engsupervisionworks :
-            if work.workcost():
-                totalengsupervisionworkscosts += work.workcost()
+            if work.work_cost:
+                totalengsupervisionworkscosts += work.work_cost
         #------------------------------------
         # تكاليف الخامات
         total_khamat_cost = 0
@@ -355,12 +354,20 @@ class Project(models.Model):
         else:
             total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost
         return total_charge
+    
+    def save(self, *args, **kwargs):
+        if self.client and not self.project_address:
+            if self.client.address:
+                self.project_address = self.client.address
+        super().save(*args, **kwargs)
     class Meta:
         verbose_name_plural = 'المشاريع'
         verbose_name = 'مشروع'
 
     def __str__(self):
-        if self.project_name:
+        if self.client:
+            return str(self.client.name)
+        elif self.project_name:
             return str(self.project_name)
         else:
             return '---'
