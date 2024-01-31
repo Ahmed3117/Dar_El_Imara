@@ -1,0 +1,638 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    body{
+        color:#633c0f!important;
+    }
+    .page-header {
+        margin: 0 0 1rem;
+    }
+
+    .brc-default-l1 {
+        border-color: #dce9f0!important;
+    }
+
+    .text-grey-m2 {
+        color: #dce9f0!important;
+    }
+
+    .pb-25, .py-25 {
+        padding: .5rem!important;
+    }
+
+    .bgc-default-tp1 {
+        background-color: #497d85!important;
+    }
+    .bgm {
+        background-color: #d87606!important;
+    }
+    .bgc-default-l4, .bgc-h-default-l4:hover {
+        background-color: #f3f8fa!important;
+    }
+    .btn-light {
+        color: #757984;
+        background-color: #a8b0c9;
+        border-color: #dddfe4;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+
+
+<style>
+        body{
+        margin-top:5px;
+        color: #1c5cda;
+    }
+    
+    @media print {
+        /* Hide the print button when printing */
+        .action-buttons {
+            display: none;
+        }
+        .back {
+            display: none;
+        }
+        .page-header {
+            margin: 0 0 0rem;
+        }
+    }
+    .page-header {
+        margin: 0 0 1rem;
+    }
+    .brc-default-l1 {
+        border-color: #dce9f0!important;
+    }
+    .text-grey-m2 {
+        color: #dce9f0!important;
+    }
+    .pb-25, .py-25 {
+        padding: .5rem!important;
+    }
+    .bgc-default-tp1 {
+        background-color: #497d85!important;
+    }
+    .bgc-default-l4, .bgc-h-default-l4:hover {
+        background-color: #f3f8fa!important;
+    }
+    .btn-light {
+        color: #757984;
+        background-color: #a8b0c9;
+        border-color: #dddfe4;
+    }
+    .width_cust{
+        max-width: 40%;
+    }
+    .box {
+        display: block;
+    }
+</style>
+
+
+    
+        <div class="page-content container">
+            <div class="page-header text-blue-d2">
+                <div class="page-tools">
+                    <div class="row action-buttons" id = "action-buttons">
+
+                        <div class="col-3 align-self-start d-sm-flex justify-content-start">
+                            <button class="btn bg-white btn-light mx-1px print-button" onclick="printPage()" data-title="Print">
+                                طباعة
+                            </button>
+                            <a class="btn bg-white btn-light mx-1px back" style="text-align:center;" href="{% url 'admin:index' %}">
+                                رجوع
+                            </a>
+                        </div>
+                        <div class="col-9 align-self-start d-sm-flex justify-content-end">
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox0"> اجمالى المشروع 
+                            {% if project_expected_costs_list.0 %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox1"> تكاليف متوقعة
+                            {% endif %}
+                            {% if khamat_costs.0 %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox2"> الخامات الفعلية
+                            {% endif %}
+                            {% if workersreserves.0 %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox3">مستحقات العاملين
+                            {% endif %}
+                            {% if marketsreserves.0 %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox4">مستحقات الموردين
+                            {% endif %}
+                            {% comment %} {% if inpaycosts.0 %} {% endcomment %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox5">الوارد المالى
+                            {% comment %} {% endif %} {% endcomment %}
+                            {% if designworks.0 %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox6"> اعمال التصميم
+                            {% endif %}
+                            {% if engsupervisionworks.0 %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox7"> الاشراف (التكاليف)
+                            {% endif %}
+                            <input type="checkbox" class="checkbox m-2" checked id="checkbox8">الكل
+                        </div>
+                    
+                    </div>
+
+                    <div class="row" id="search-container">
+                        <div class="my-3">
+                            <form id = "search-form" action = "{% url 'maindata:fullreport' %}" method="POST">
+                                {% csrf_token %}
+                                <div >
+                                    <div class="row container">
+                                        <div class="col-1">
+                                            <button hidden type="submit" class="btn btn-primary btn-sm" >بحث</button>
+                                        </div>
+                                        <div class="col-9">
+                                            <select id = "select-project" class="form-control form-control-sm" name="searchedproject">
+                                                    {% if project.id %}
+                                                        <option selected value="{{project.id}}">{{project.client.name}} - {{project.project_name}}</option>
+                                                    {% else %}
+                                                    <option selected value="None" style="color:red; background-color:yellow; font-size:20px;">
+                                                        اختر مشروع لرؤية تقريره
+                                                    </option>
+                                                    {% endif %}
+                                                    {% for proj in projects %}
+                                                        {% if not proj.id == project.id %}
+                                                            <option value="{{proj.id}}">{{proj.client.name}} - {{proj.project_name}}</option>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-2">
+                                            <a id = 'selecte_dproject' href = '' onclick = 'gotoselectedproject()' class="btn btn-primary btn-sm" >اذهب لى هذا المشروع</a>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                                
+                            </form>
+                        </div>
+
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    
+        <div class="container" id="print">
+            <div class="row invoice">
+                <div class="col-12 col-lg-12">
+                    <div class="row" style="background-color: #10626F;">
+                        <div class="col align-self-start d-sm-flex justify-content-start">
+                            <hr class="d-sm-none" />
+                            <div class="text-grey-m2">
+                                <div class="row text-white bgm py-25 ">
+                                    معلومات العميل
+                                </div>
+                    
+                                {% if client.name %}
+                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">الاسم:</span> {{client.name}}</div>
+                                {% endif %}
+                                {% if client.phone_number %}
+                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">موبايل:</span> {{client.phone_number}}</div>
+                                {% endif %}
+                                {% if client.address %}
+                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">عنوان:</span> {{client.address}}</div>
+                                {% endif %}
+                                {% if client.code %}
+                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">الكود:</span> {{client.code}}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    
+                        <div class="col d-flex justify-content-end">
+                            <div>
+                                <!-- Adjust the width and height as needed -->
+                                <img src="{{ logo_url }}" alt=""  style="max-width: 200px; max-height: 100px;">
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="">
+                        
+                        
+                            <div >
+
+                                    
+                                    {% comment %} اجمالى المشروع  {% endcomment %}
+                                    <div class="box" id="box1">  
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606">اجمالى المشروع (مج)</div>
+                                            {% if designworks.0 %}
+                                            <div class="col-2 col-sm-2"> اعمال التصميم</div>
+                                            {% endif %}
+                                            {% if engsupervisionworks.0 %}
+                                            <div class="d-none d-sm-block col-2 col-sm-2"> اعمال الاشراف </div>
+                                            {% endif %}
+                                            {% if khamat_costs.0 %}
+                                            <div class="d-none d-sm-block col-1 col-sm-1"> الخامات</div>
+                                            {% endif %}
+                                            {% if workersreserves.0 %}
+                                            <div class="d-none d-sm-block col-1 col-sm-1"> المصنعيات</div>
+                                            {% endif %}
+                                            <div class="col-2 col-sm-2">الوارد المالى</div>
+                                            <div class="col-2 col-sm-2" tooltip = "lllllll">المتبقى فى خزينة المشروع</div>
+                                        </div>
+                                        <div class="text-95 text-secondary-d3">
+                                            <div class="row mb-2 mb-sm-0 py-25">
+                                                <div class="col-2 col-sm-2"></div>
+                                                {% if designworks.0 %}
+                                                <div class="col-2 col-sm-2">{{totaldesignworkscosts}}</div>
+                                                {% endif %}
+                                                {% if engsupervisionworks.0 %}
+                                                <div class="d-none d-sm-block col-2 col-sm-2">{{totalengsupervisionworkscosts}}</div>
+                                                {% endif %}
+                                                {% if khamat_costs.0 %}
+                                                <div class="d-none d-sm-block col-1 col-sm-1">{{total_khamat_cost}}</div>
+                                                {% endif %}
+                                                {% if workersreserves.0 %}
+                                                <div class="d-none d-sm-block col-1 col-sm-1">{{total_workersreserves_cost}}</div>
+                                                {% endif %}
+                                                <div class="col-2 col-sm-2">{{all_inpay_costs}}</div>
+                                                <div class="col-2 col-sm-2">{{total_charge}}</div>
+                                            </div>
+                                        </div>
+                                    
+                                    </div>
+                                    {% if project_expected_costs_list.0 %}
+                                    {% comment %} التكاليف المتوقعة (مج) {% endcomment %}
+                                    <div class="box" id="box0">  
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606"> التكاليف المتوقعة (مج)</div>
+                                            <div class="col-3 col-sm-3"> البند</div>
+                                            <div class="d-none d-sm-block col-2 col-sm-2">  مصنعيات </div>
+                                            <div class="d-none d-sm-block col-2 col-sm-2"> خامات</div>
+                                            <div class="d-none d-sm-block col-2 col-sm-2"> المجموع الكلى</div>
+                                            
+                                        </div>
+                                        {% for main_category_cost in project_expected_costs_list %}
+                                            <div class="row mb-2 mb-sm-0 py-25">
+                                                <div class="col-2 col-sm-2"></div>
+                                                <div class="col-3 col-sm-3">{{main_category_cost.0}}</div>
+                                                <div class="d-none d-sm-block col2 col-sm-2">{{main_category_cost.1}}</div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">{{main_category_cost.2}}</div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">{{main_category_cost.3}}</div>
+
+                                            </div>
+                                            {% empty %}
+                                            <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                            
+                                        {% endfor %}
+                                    
+                                    </div>
+                                    {% endif %}
+                                    {% if khamat_costs.0 %}
+                                    {% comment %} الخامات الفعلية (مج) {% endcomment %}
+                                    <div class="box" id="box7">  
+                                        
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606">  الخامات الفعلية (مج)</div>
+                                                <div class="col-2 col-sm-2">  الخامة</div>
+                                                <div class="d-none d-sm-block col-1 col-sm-1">  الكمية  </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> سعر الوحدة </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> السعر الكلى</div>
+                                                <div class="d-none d-sm-block col-1 col-sm-1">  المدفوع</div>
+                                                <div class="col-2 col-sm-2"> القائم بالدفع</div>
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for khamacost in khamat_costs %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    {% if khamacost.khama %}
+                                                    <div class="col-2 col-sm-2">{{khamacost.khama.name}}</div>
+                                                    {% else %}
+                                                        <div class="col-2 col-sm-2">غير معروف</div>
+                                                    {% endif %}
+                                                    
+                                                    <div class="d-none d-sm-block col-1 col-sm-1">{{khamacost.quantity}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{khamacost.khama_current_price}}</div>
+                                                    <div class="col-2 col-sm-2">{{khamacost.total_cost_for_this_khama}}</div>
+                                                    <div class="col-1 col-sm-1">{{khamacost.paid}}</div>
+                                                    {% if khamacost.who_paid %}
+                                                        <div class="col-2 col-sm-2">{{khamacost.who_paid.name}}</div>
+                                                    {% else %}
+                                                        <div class="col-2 col-sm-2">غير معروف</div>
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                
+                                                {% endfor %}
+                        
+                                            </div>
+                                    </div>
+                                    {% endif %}
+                                    {% if workersreserves.0 %}
+                                    {% comment %} مستحقات العاملين (مج) {% endcomment %}
+                                    <div class="box" id="box2">  
+                                        
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606"> مستحقات العاملين (مج)</div>
+                                                <div class="col-2 col-sm-2">  العامل</div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">  المهنة </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> المستحق </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> حصل على</div>
+                                                <div class="col-2 col-sm-2"> الباقى</div>
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for client in workersreserves %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    <div class="col-2 col-sm-2">{{client.0}}</div>
+                                                    <div class="d-none d-sm-block col2 col-sm-2">{{client.1}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{client.2}}</div>
+                                                    <div class="col-2 col-sm-2">{{client.3}}</div>
+                                                    <div class="col-2 col-sm-2">{{client.4}}</div>
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                
+                                                {% endfor %}
+                        
+                                            </div>
+                                    </div>
+                                    {% endif %}
+                                    {% if marketsreserves.0 %}
+                                    {% comment %} مستحقات الموردين (مج) {% endcomment %}
+                                    <div class="box" id="box6">  
+                                        
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606"> مستحقات الموردين (مج)</div>
+                                                <div class="col-2 col-sm-2">  المورد</div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> المستحق </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2"> حصل على</div>
+                                                <div class="col-2 col-sm-2"> الباقى</div>
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for market in marketsreserves %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    <div class="col-2 col-sm-2">{{market.0}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{market.1}}</div>
+                                                    <div class="col-2 col-sm-2">{{market.2}}</div>
+                                                    <div class="col-2 col-sm-2">{{market.3}}</div>
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                
+                                                {% endfor %}
+                        
+                                            </div>
+                                    </div>
+                                    {% endif %}
+                                    {% comment %} {% if inpaycosts.0 %} {% endcomment %}
+                                    {% comment %} الوارد المالى (مج) {% endcomment %}
+                                    <div class="box" id="box3">  
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606"> الوارد المالى (مج)</div>
+                                                <div class="col-2 col-sm-2">  القائم بالدفع</div>
+                                                <div class="d-none d-sm-block col-3 col-sm-3">  المستلم </div>
+                                                <div class="d-none d-sm-block col-3 col-sm-3">  التاريخ </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">  المدفوع</div>
+
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for inpay in inpaycosts %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    <div class="col-2 col-sm-2">{{inpay.giver}}</div>
+                                                    {% if inpay.recipient %}
+                                                        <div class="d-none d-sm-block col-3 col-sm-3">{{inpay.recipient}}</div>
+                                                    {% else %}
+                                                        <div class="d-none d-sm-block col-3 col-sm-3">غير محدد</div>
+                                                    {% endif %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">{{inpay.date_added}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{inpay.paid}}</div>
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                
+                                                {% endfor %}
+                        
+                                            </div>
+                                    </div>
+                                    {% comment %} {% endif %} {% endcomment %}
+                                    {% if designworks.0 %}
+                                    {% comment %} اعمال التصميم (مج) {% endcomment %}
+                                    <div class="box" id="box4">  
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606">  اعمال التصميم (مج)</div>
+                                                <div class="col-2 col-sm-2">  نوع العمل</div>
+                                                <div class="d-none d-sm-block col-3 col-sm-3">  طريقة الحسبة </div>
+                                                <div class="d-none d-sm-block col-3 col-sm-3">  الكمية </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">  التكلفة</div>
+
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for designwork in designworks %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    <div class="col-2 col-sm-2">{{designwork.worktype.type}}</div>
+                                                    {% if designwork.account_way == 'mitr' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">بالمتر</div>
+                                                    {% endif %}
+                                                    {% if designwork.account_way == 'unit' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">بالوحدة</div>
+                                                    {% endif %}
+                                                    {% if designwork.account_way == 'direct' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">مقطعية</div>
+                                                    {% endif %}
+                                                    
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">{{designwork.ammount}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{designwork.work_cost}}</div>
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                {% endfor %}
+                        
+                                            </div>
+                                    </div>
+                                    {% endif %}
+                                    {% if engsupervisionworks.0 %}
+                                    {% comment %} الاشراف (التكاليف) {% endcomment %}
+                                    <div class="box" id="box5">  
+                                        <div class="row text-white bgc-default-tp1 ">
+                                            
+                                            <div class="col-2 col-sm-2" style="background-color: #d87606">  الاشراف (التكاليف)</div>
+                                                <div class="col-3 col-sm-3">  التكاليف (خامات + مصنعيات)</div>
+                                                <div class="d-none d-sm-block col-3 col-sm-3">   نوع الحسبة </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">  الكمية </div>
+                                                <div class="d-none d-sm-block col-2 col-sm-2">  التكلفة الكلية</div>
+
+                                            </div>
+                                            <div class="text-95 text-secondary-d3">
+                                                {% for engsupervisionwork in engsupervisionworks %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                    <div class="col-2 col-sm-2"></div>
+                                                    <div class="col-3 col-sm-3">{{engsupervisionwork.allcosts}}</div>
+                                                    {% if engsupervisionwork.account_way == 'percent' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">نسبة</div>
+                                                    {% endif %}
+                                                    {% if engsupervisionwork.account_way == 'direct' %}
+                                                    <div class="d-none d-sm-block col-3 col-sm-3">مقطعية</div>
+                                                    {% endif %}
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.ammount}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.work_cost}}</div>
+                                                </div>
+                                                {% empty %}
+                                                <div class="row mb-2 mb-sm-0 py-25">
+                                                <span style="color:red; text-align:center;">
+                                                    لا يوجد    
+                                                </span>
+                                            </div>
+                                                {% endfor %}
+                        
+                                            </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="row" style="background-color: #10626F;">
+                                            <div class="col align-self-start d-sm-flex justify-content-start">
+                                                <hr class="d-sm-none" />
+                                                <div class="text-grey-m2">
+                                                    <div class="row text-white bgm py-25 ">
+                                                        معلومات التواصل
+                                                    </div>
+                                                    {% if companyinfo.address %}
+                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">العنوان:</span> {{companyinfo.address}} </div>
+                                                    {% endif %}
+                                                    {% if companyinfo.address %}
+                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">موبايل:</span>  {{companyinfo.phone}}</div>
+                                                    {% endif %}
+                                                    {% if companyinfo.mail %}
+                                                    <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600 text-90">الايميل:</span>  {{companyinfo.mail}}</div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        
+                                            
+                                        </div>
+
+                                
+                                    </div>
+    
+    
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    
+    
+    <script>
+        function printPage() {
+        
+            // Create a link element for the print stylesheet
+            var style = document.createElement('link');
+            style.type = 'text/css';
+            style.rel = 'stylesheet';
+            style.href = 'path/to/print-styles.css'; // Replace with the actual path to your print stylesheet
+        
+            // Append the link element to the head of the document
+            document.head.appendChild(style);
+        
+            // Trigger the print dialog
+            window.print();
+        
+            // Remove the added print stylesheet after printing
+            style.parentNode.removeChild(style);
+        }
+        
+    </script>
+    
+    <script>
+        const checkboxes = document.querySelectorAll('.checkbox');
+        const boxes = document.querySelectorAll('.box');
+    
+        checkboxes.forEach((checkbox, index) => {
+          checkbox.addEventListener('change', () => {
+            boxes[index].style.display = checkbox.checked ? 'block' : 'none';
+          });
+        });
+    
+        const selectDeselectAll = document.getElementById('checkbox8');
+        selectDeselectAll.addEventListener('change', () => {
+          checkboxes.forEach(checkbox => {
+            checkbox.checked = selectDeselectAll.checked;
+          });
+    
+          boxes.forEach((box, index) => {
+            box.style.display = selectDeselectAll.checked ? 'block' : 'none';
+          });
+        });
+    </script>
+
+    <script>
+        let action_buttons = document.getElementById("action-buttons")
+        let print_container = document.getElementById("print")
+        let search_form = document.getElementById("search-form")
+        let select_project = document.getElementById("select-project")
+        let selecte_dproject = document.getElementById("selecte_dproject")
+
+        if (select_project.value == 'None') {
+            action_buttons.style.display = 'none'
+            print_container.style.display = 'none'
+            selecte_dproject.style.display = 'none'
+        } 
+        select_project.addEventListener('change' , function(){
+            console.log(select_project.value)
+            if (select_project.value == 'None') {
+                action_buttons.style.display = 'none'
+                print_container.style.display = 'none'
+                selecte_dproject.style.display = 'none'
+            } 
+            else{
+                search_form.submit()
+                action_buttons.style.display = 'block'
+                print_container.style.display = 'block'
+                selecte_dproject.style.display = 'block'
+            }
+        })
+
+
+        function gotoselectedproject(){
+            selected_project_id = select_project.value
+            selecte_dproject.href = `/admin/maindata/project/${selected_project_id}/change/`
+        }
+
+    </script>
+
+
+
+
+{% endblock content %}

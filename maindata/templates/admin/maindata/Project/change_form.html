@@ -19,6 +19,7 @@
         .field-file{
             max-width : 160px !important;
         }
+        
     </style>
 
     <script src="{% static 'js/jquery.js' %}"></script>
@@ -478,9 +479,6 @@
 
 
 <script>
-
-
-
     fetch('/gettotaldata/{{ original.pk }}/')
         .then(response => response.json())
         .then(data => {
@@ -512,6 +510,44 @@
 
 
 
+</script>
+
+<script>
+    let deletelink = document.getElementsByClassName('deletelink')
+    let addanother = document.getElementsByName('_addanother')
+    deletelink[0].style.display = 'none'
+    addanother[0].style.display = 'none'
+</script>
+
+
+<script>
+    let selected_client = document.getElementById("id_client");
+    let project_address = document.getElementById("id_project_address");
+
+    let span__client_address = document.createElement("span");
+    span__client_address.textContent = "";  
+    span__client_address.style.margin = "10px";
+    span__client_address.style.color = "blue";
+    span__client_address.id = 'address_span'
+    project_address.parentNode.insertBefore(span__client_address, project_address.nextSibling);
+
+    selected_client.onchange = function(){
+        console.log(selected_client.value)
+        let selected_client_id = selected_client.value;
+        fetch(`/getselectedclientaddress/${selected_client_id}` , {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              // 'X-CSRFToken':{{csrftoken}} // Assuming you have a function to get the CSRF token
+            },
+          })
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            span__client_address.textContent = ` العنوان الافتراضى فى حالة ترك العنوان خالى هو : "${data}"`
+          });
+          
+        }
 </script>
 
 

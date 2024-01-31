@@ -277,9 +277,9 @@ class ProjectWorkersReserves(models.Model):
 
 class Project(models.Model):
     # user=models.ForeignKey(MainUser,on_delete=models.CASCADE,null=True,blank=True,editable = False)
-    project_name = models.CharField(verbose_name="اسم المشروع",default = "---", max_length=200)
+    project_name = models.TextField(verbose_name=",وصف المشروع",default = "---", max_length=200)
     client = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="عميل",limit_choices_to={"type": "C"})
-    project_address = models.CharField(verbose_name=" عنوان المشروع", max_length=200, null=True, blank=True,help_text = "ان ترك خاليا سيأخذ عنوان العميل عند الحفظ")
+    project_address = models.CharField(verbose_name=" عنوان المشروع", max_length=200, null=True, blank=True)
     isdesignwork = models.BooleanField(default=False,verbose_name="المشروع يتضمن اعمال تصميم ؟ ")
     issupervision = models.BooleanField(default=False,verbose_name="المشروع يتضمن اعمال اشراف ؟")
     coin = models.ForeignKey(Coin,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="عملة التعامل",help_text = "تعنى ان جميع الحسابات والارقام الحسابية المسجلة فى هذا المشروع هى بهذه العمله")

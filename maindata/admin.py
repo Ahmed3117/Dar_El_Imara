@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -33,6 +34,13 @@ class UnpaidFilter(admin.SimpleListFilter):
             paid_ids = [project.id for project in queryset if project.totalcharge() <= 0]
             return queryset.filter(id__in=paid_ids)
 
+class ProjectForm(forms.ModelForm):
+    class Meta:
+        model = Project
+        fields = '__all__'
+        widgets = {
+            'project_name': forms.Textarea(attrs={'rows':4}),
+        }
 class ExpectedProjectCostsAdmin(admin.ModelAdmin):
     list_display = ('project', 'main_category_detail', 'sub_category_detail', 'workers_reserves', 'workers_reserves_cost', 'khama', 'total_cost_for_this_khama')
     list_filter = ('project', 'main_category_detail', 'sub_category_detail')
@@ -120,7 +128,12 @@ class IntermediaryTableWorkerCountInlineAdmin(admin.TabularInline):
     # classes = ('collapse',)
 
 class ProjectAdmin(admin.ModelAdmin):
-    
+    form = ProjectForm
+    def has_add_permission(self, request):
+        # if there's already an instance, do not allow adding
+        if self.model.objects.count() > 15:
+            return False
+        return super().has_add_permission(request)
     # # to filter the project objects according to the current logginned user
     # # don't forget to add user field for 
     # def get_queryset(self, request):
@@ -131,10 +144,6 @@ class ProjectAdmin(admin.ModelAdmin):
     #     if not change:
     #         obj.user = request.user
     #     super().save_model(request, obj, form, change)
-        
-        
-        
-        
     # def get_queryset(self, request):
     #     # Customize the queryset here
     #     # For example, let's say you want to only show objects with a specific attribute value

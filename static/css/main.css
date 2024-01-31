@@ -8,10 +8,10 @@ a {
   .form-control-sm {
     min-height: calc(1.5em + (0.5rem + 2px));
     padding: 0.1rem 0.1rem;
-    font-size: .775rem;
+    font-size: 1rem;
     border-radius: 0.2rem;
+    color: red;
   }
-  
   
   @media (min-width: 576px){
   .modal-dialog {
