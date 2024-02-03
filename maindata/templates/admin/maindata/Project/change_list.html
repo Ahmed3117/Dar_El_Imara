@@ -120,6 +120,10 @@ a {
 
 
 
+
+
+
+
 <script>
 
   // add aplace holder to the searchbar
@@ -218,6 +222,34 @@ window.print();
 </script>
 
 {{ block.super }}
+
+<script>
+  // Get all the tr elements in the table
+  let rows = document.querySelectorAll("#result_list tr");
+
+  // Loop through each row
+  for (let row of rows) {
+    // Get the td element that contains the image
+    let td = row.querySelector(".field-is_done");
+
+    // Check if the image has alt="True"
+    if (td && td.querySelector("img[alt='True']")) {
+      // Set the background color of the row to red
+      row.style.backgroundColor = "#1c353a";
+      row.style.color = "white";
+    }
+    else{
+      // Set the background color of the row to red
+      row.style.backgroundColor = "#e9f588";
+      row.style.color = "black";
+    }
+  }
+
+</script>
+
+
+
+
 <script>
 // Get the select element
 
