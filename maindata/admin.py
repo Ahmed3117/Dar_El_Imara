@@ -179,7 +179,7 @@ class ProjectAdmin(admin.ModelAdmin):
         maindata_expectedprojectcosts_changelist_url += f'?project_id={project_id}'
         maindata_inpay_changelist_url = reverse('admin:maindata_inpay_changelist')
         maindata_inpay_changelist_url += f'?project_id={project_id}'
-        modal_html = render_to_string('admin/maindata/project/details.html', {
+        modal_html = render_to_string('admin/maindata/Project/details.html', {
             'worksdata_designwork_changelist_url' : worksdata_designwork_changelist_url,
             'worksdata_engsupervision_changelist_url' : worksdata_engsupervision_changelist_url,
             'maindata_projectkhamatcosts_changelist_url' : maindata_projectkhamatcosts_changelist_url,
