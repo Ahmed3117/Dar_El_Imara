@@ -4,8 +4,8 @@ from django.urls import include, path
 from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('maindata.urls',namespace='maindata')),
+    path('', admin.site.urls),
+    path('maindata/', include('maindata.urls',namespace='maindata')),
     path('subdata/', include('subdata.urls',namespace='subdata')),
     path('userdata/', include('userdata.urls',namespace='userdata')),
     path('inoutpay/', include('inoutpay.urls',namespace='inoutpay')),
