@@ -1,0 +1,59 @@
+a {
+    color: #085f84;
+    text-decoration: none;
+  }
+  
+  
+  
+  .form-control-sm {
+    min-height: calc(1.5em + (0.5rem + 2px));
+    padding: 0.1rem 0.1rem;
+    font-size: 1rem;
+    border-radius: 0.2rem;
+    color: red;
+  }
+  
+  @media (min-width: 576px){
+  .modal-dialog {
+      max-width: 1000px;
+      margin: 1.75rem auto;
+  }
+  }
+  
+  td {
+    line-height: 20px;
+  }
+
+
+.accordion-button {
+  background-color: var(--dark-color);
+  color:#1b7691;
+}
+.accordion-button-div :hover{
+  background-color: white;
+  color:var(--dark-color);
+}
+.accordion-button-div :focus {
+  box-shadow: none;
+}
+.accordion-button:not(.collapsed) {
+  background-color: var(--dark-color);
+  color: #1b7691;
+}
+.accordion-body{
+  background-color: white;
+}
+.span_date_style{
+  margin-left:5vw ;
+  font-size:10px;
+}
+.align-right {
+  text-align: right;
+}
+.accordian-footer{
+  text-align: center;
+  color: #203f6d;
+  font-size: 30px;
+  margin-bottom: 50px;
+}
+
