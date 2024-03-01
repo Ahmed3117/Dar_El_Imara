@@ -12,6 +12,7 @@ urlpatterns = [
     path('get_project_expected_costs/<int:subcategory_id>/', get_project_expected_costs, name='get_project_expected_costs'),
     path('gettotaldata/<int:project_pk>/', gettotaldata, name='gettotaldata'),
     path('fullreport/', fullreport, name='fullreport'),
+    
     #-----------------------------------------------
     path('get_categories/', GetCategoriesView.as_view(), name='get_categories'),
     path('get_category_workers/', GetCategoryWorkers.as_view(), name='get_category_workers'),
