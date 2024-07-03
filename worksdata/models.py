@@ -1,10 +1,11 @@
 
 from django.db import models
 from maindata.models import Project, ProjectKhamatCosts, ProjectWorkersReserves
+from django.core.validators import MinValueValidator
 class DesignWorkType(models.Model):
-    type = models.CharField(verbose_name="شغلانة ", max_length=100 , null=True)
-    unit_price = models.IntegerField(verbose_name=" سعر الوحدة", default=1, null=True, blank=True)
-    mitr_price = models.IntegerField(verbose_name=" سعر المتر", default=1, null=True, blank=True)
+    type = models.CharField(verbose_name="شغلانة ", max_length=100)
+    unit_price = models.IntegerField(verbose_name=" سعر الوحدة", default=1,validators=[MinValueValidator(1)])
+    mitr_price = models.IntegerField(verbose_name=" سعر المتر", default=1,validators=[MinValueValidator(1)])
 
     class Meta:
         verbose_name_plural = ' انواع شغل التصميم'
@@ -23,12 +24,12 @@ class DesignWork(models.Model):
         ("mitr", "بالمتر"),
         ("unit", "بالوحدة"),
     )
-    project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="المشروع")
-    worktype = models.ForeignKey(DesignWorkType,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="نوع الشغلانة",)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, verbose_name="المشروع")
+    worktype = models.ForeignKey(DesignWorkType,on_delete=models.CASCADE,verbose_name="نوع الشغلانة",)
     account_way = models.CharField(verbose_name="نوع الحسبة", choices=accountway, max_length=10, default="mitr", blank=True,help_text ="اختيار بالمتر معناه ان سيتم احتساب سعر التصميم عن طريق ضرب الكمية فى سعر المتر الواحد للشغلانة , اختيار بالوحده يعنى سعر التصميم يساوى ضرب الكمية فى سعر الوحدة للشغلانة , اختيار مقطعية يعنى سعر التصميم يساوى الكمية مباشرة")
-    ammount = models.IntegerField(verbose_name="الكمية", default=0, null=True, blank=True)
+    ammount = models.IntegerField(verbose_name="الكمية", validators=[MinValueValidator(1)])
     date_added = models.DateTimeField(verbose_name="تاريخ الاضافة", auto_now_add=True, null=True, blank=True)
-    work_cost = models.IntegerField(verbose_name=" المجموع", default=0, null=True, blank=True)
+    work_cost = models.IntegerField(verbose_name=" المجموع", default=0,validators=[MinValueValidator(0)], null=True, blank=True)
     description = models.CharField(verbose_name=" وصف", max_length=1000,null=True, blank=True)
     file = models.FileField(upload_to='files/', null=True,blank=True,verbose_name = "   ملف ")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
@@ -74,12 +75,12 @@ class EngSupervision(models.Model):
         ("direct", "مقطعية"),
         ("percent", "نسبة"),
     )
-    project = models.OneToOneField(Project, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="المشروع")
+    project = models.OneToOneField(Project, on_delete=models.CASCADE, verbose_name="المشروع")
     account_way = models.CharField(verbose_name="نوع الحسبة", choices=accountway, max_length=10, default="direct", blank=True,help_text ="اختيار نسبة معناه ان سيتم احتساب سعر الاشراف عن طريق ضرب الكمية (%) فى ( مجموع حساب الخامات الفعلية + مجموع حساب مستحقات العاملين ) مقسوما على 100 , اختيار مقطعية يعنى سعر الاشراف يساوى الكمية مباشرة")
-    ammount = models.IntegerField(verbose_name="الكمية", null=True, blank=True)
+    ammount = models.IntegerField(verbose_name="الكمية", default=0, validators=[MinValueValidator(0)])
     date_added = models.DateTimeField(verbose_name="تاريخ الاضافة", auto_now_add=True, null=True, blank=True)
     all_costs = models.IntegerField(verbose_name=" جميع التكاليف", default=1, editable=False, null=True, blank=True)
-    work_cost = models.IntegerField(verbose_name=" الحساب المستحق", default=1, editable=False, null=True, blank=True)
+    work_cost = models.IntegerField(verbose_name=" الحساب المستحق", default=1, null=True, blank=True)
     description = models.CharField(verbose_name=" وصف", max_length=1000,null=True, blank=True)
 
     def workcost(self):

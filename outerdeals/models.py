@@ -1,14 +1,14 @@
 from django.db import models
-
+from django.core.validators import MinValueValidator
 from userdata.models import User
 
 # Create your models here.
 class OfficeCosts(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL,related_name='who_did_this', null=True,blank=True,verbose_name = " القائم بالشراء") 
-    ammount = models.IntegerField(verbose_name = " المصروف",null=True,blank=True)
+    ammount = models.IntegerField(verbose_name = " المصروف",default=0,validators=[MinValueValidator(0)])
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     cost_reason = models.CharField(verbose_name="سبب الصرف", max_length=200, null=True, blank=True)
-    file = models.FileField(upload_to='costs_files/', null=True,blank=True,verbose_name = "   فاتورة ")
+    file = models.FileField(upload_to='costs_files/', null=True,blank=True,verbose_name = "فاتورة ")
 
     def __str__(self) :
         if self.ammount :
@@ -20,12 +20,12 @@ class OfficeCosts(models.Model):
         verbose_name='  مصروف '
         
 class OutDeals(models.Model):
-    creditor = models.ForeignKey(User, on_delete=models.SET_NULL,related_name='creditor_user', null=True,blank=True,verbose_name = "  الدائن") 
-    debtor = models.ForeignKey(User, on_delete=models.SET_NULL,related_name='debtor_user', null=True,blank=True,verbose_name = "  المدين") 
-    ammount = models.IntegerField(verbose_name = " المبلغ",default = 0,null=True,blank=True)
+    creditor = models.ForeignKey(User, on_delete=models.CASCADE,related_name='creditor_user',verbose_name = "  الدائن") 
+    debtor = models.ForeignKey(User, on_delete=models.CASCADE,related_name='debtor_user',verbose_name = "  المدين") 
+    ammount = models.IntegerField(verbose_name = " المبلغ",default = 0,validators=[MinValueValidator(0)])
     date_added = models.DateTimeField(verbose_name = " التاريخ ",auto_now_add=True,null=True,blank=True) 
     reason = models.CharField(verbose_name="سبب الدين", max_length=200, null=True, blank=True)
-    paid = models.IntegerField(verbose_name = "  المدفوع حتى الان",default = 0,null=True,blank=True)
+    paid = models.IntegerField(verbose_name = "  المدفوع حتى الان",default = 0,validators=[MinValueValidator(0)])
     file = models.FileField(upload_to='costs_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     def charge(self):
         if self.ammount and self.paid:
@@ -43,8 +43,8 @@ class OutDeals(models.Model):
         verbose_name='  تعامل  '
         
 class MonthPay(models.Model):
-    outdeal = models.ForeignKey(OutDeals, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "  العملية") 
-    ammount = models.IntegerField(verbose_name = " المبلغ",default = 0,null=True,blank=True)
+    outdeal = models.ForeignKey(OutDeals, on_delete=models.CASCADE,verbose_name = "  العملية") 
+    ammount = models.IntegerField(verbose_name = " المبلغ",default = 0,validators=[MinValueValidator(0)])
     date_added = models.DateTimeField(verbose_name = " التاريخ ",auto_now_add=True,null=True,blank=True) 
     file = models.FileField(upload_to='costs_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     def save(self, *args, **kwargs):

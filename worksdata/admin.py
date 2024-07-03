@@ -17,6 +17,7 @@ class EngSupervisionAdmin(admin.ModelAdmin):
     list_filter = ('project', 'account_way')
     search_fields = ('project__project_name','project__client__name')
     # list_select_related = ('project',)
+    readonly_fields = ('work_cost',)
 
 admin.site.register(DesignWorkType, DesignWorkTypeAdmin)
 admin.site.register(DesignWork, DesignWorkAdmin)

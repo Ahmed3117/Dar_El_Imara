@@ -144,7 +144,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
-# "settings.py"
+
 ADMIN_ORDERING = (
     ('maindata', ('Project',)),
     ('userdata', ('User','MarketSources')),

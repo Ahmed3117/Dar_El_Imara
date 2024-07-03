@@ -1,8 +1,8 @@
 from django.db import models
-
+from django.core.validators import MinValueValidator
 # Create your models here.
 class CategoryDetail(models.Model):
-    main_category = models.CharField(verbose_name="اسم البند ", max_length=100, blank=True , null=True)
+    main_category = models.CharField(verbose_name="اسم البند ", max_length=100)
     class Meta:
         verbose_name_plural = '   البنود'
         verbose_name = 'بند اساسى'
@@ -14,8 +14,8 @@ class CategoryDetail(models.Model):
             return '---'
 
 class SubCategoryDetail(models.Model):
-    sub_category = models.CharField(verbose_name="اسم البند ", max_length=100, blank=True , null=True)
-    main_category = models.ForeignKey(CategoryDetail, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="البند الاساسى")
+    sub_category = models.CharField(verbose_name="اسم البند ", max_length=100)
+    main_category = models.ForeignKey(CategoryDetail, on_delete=models.CASCADE, verbose_name="البند الاساسى")
 
     class Meta:
         verbose_name_plural = '   البنود الفرعية'
@@ -47,9 +47,9 @@ class EmployeeCategory(models.Model):
 
 
 class Khama(models.Model):
-    name = models.CharField(verbose_name="اسم الخامة ", max_length=100, blank=True , null=True)
+    name = models.CharField(verbose_name="اسم الخامة ", max_length=100)
     main_category = models.ForeignKey(CategoryDetail, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="البند الاساسى")
-    unit_price = models.IntegerField(null=True, blank=True, verbose_name="سعر الوحده ")
+    unit_price = models.IntegerField( verbose_name="سعر الوحده ",default=0,validators=[MinValueValidator(0)])
     class Meta:
         verbose_name_plural = ' الخامات'
         verbose_name = ' خامة'

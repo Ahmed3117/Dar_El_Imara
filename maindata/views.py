@@ -44,8 +44,8 @@ def invoice(request, pk):
     engsupervisionworks = EngSupervision.objects.filter(project = obj)
     totalengsupervisionworkscosts = 0
     for work in engsupervisionworks :
-        if work.work_cost:
-            totalengsupervisionworkscosts += work.work_cost
+        if work.workcost:
+            totalengsupervisionworkscosts += work.workcost()
     #------------------------------------
     # تكاليف الخامات
     total_khamat_cost = 0
@@ -333,8 +333,8 @@ def fullreport(request):
         engsupervisionworks = EngSupervision.objects.filter(project = obj)
         
         for work in engsupervisionworks :
-            if work.work_cost:
-                totalengsupervisionworkscosts += work.work_cost
+            if work.workcost:
+                totalengsupervisionworkscosts += work.workcost()
         #------------------------------------
         # تكاليف الخامات
         

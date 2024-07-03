@@ -2,6 +2,8 @@ from django.apps import apps
 from django.db import models
 import random
 from datetime import datetime
+from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 # from finishcount.models import WorkerCount
 # from inoutpay.models import Coin
 from subdata.models import CategoryDetail, Khama,SubCategoryDetail,EmployeeCategory
@@ -27,8 +29,8 @@ class Coin(models.Model):
 
 
 class inPay(models.Model):
-    project = models.ForeignKey('Project', on_delete=models.SET_NULL,related_name='inpaypro', null=True,blank=True,verbose_name = "المشروع") 
-    paid = models.IntegerField(verbose_name = "دفعة مالية",null=True,blank=True)
+    project = models.ForeignKey('Project', on_delete=models.CASCADE,related_name='inpaypro',verbose_name = "المشروع") 
+    paid = models.IntegerField(verbose_name = "دفعة مالية",validators=[MinValueValidator(0)])
     # next field only exists to relate the ProjectKhamatCosts objects that the giver is the client so that we can update the inpay objects created on saving ProjectKhamatCosts 
     project_khamat_costs_object = models.ForeignKey('ProjectKhamatCosts', on_delete=models.CASCADE, blank=True,null=True,editable = False)
     giver = models.ForeignKey(User, on_delete=models.SET_NULL,verbose_name="المسلم", blank=True,null=True,limit_choices_to={"type": "C"})
@@ -51,11 +53,11 @@ class ExpectedProjectCosts(models.Model):
     sub_category_detail = models.ForeignKey(SubCategoryDetail, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " بند فرعى")
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     workers_reserves = models.CharField(verbose_name=" تفاصيل المصنعيات", max_length=200, null=True, blank=True)
-    workers_reserves_cost = models.IntegerField(verbose_name=" تكلفة المصنعيات",  null=True, blank=True)
+    workers_reserves_cost = models.IntegerField(verbose_name=" تكلفة المصنعيات",  validators=[MinValueValidator(0)])
     # build_subjects = models.CharField(verbose_name=" تفاصيل الخامات", max_length=200, null=True, blank=True)
     # build_subjects_cost = models.IntegerField(verbose_name=" تكلفة الخامات",  null=True, blank=True)
     khama = models.ForeignKey(Khama, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "خامة")
-    quantity = models.IntegerField(verbose_name="  الكمية",default = 1, null=True, blank=True)
+    quantity = models.IntegerField(verbose_name="  الكمية",default = 1,validators=[MinValueValidator(1)])
     total_cost_for_this_khama = models.IntegerField(verbose_name="  المجموع", help_text = 'حاصل ضرب سعر الوحدة للمنتج فى الكمية (  اخر سعر تم اضافته او تعديله للمنتج )',null=True, blank=True)
     file = models.FileField(upload_to='expectedcostsfiles/', null=True,blank=True,verbose_name = "   ملف ")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
@@ -86,11 +88,11 @@ class ProjectKhamatCosts(models.Model):
     # khama = models.CharField(verbose_name=" التوصيف", max_length=200, null=True, blank=True)
     market = models.ForeignKey(MarketSources, on_delete=models.SET_NULL,default = '', null=True,blank=True,verbose_name = "المحل") 
     # price = models.IntegerField(verbose_name=" السعر",  null=True, blank=True)
-    khama = models.ForeignKey(Khama, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "خامة")
+    khama = models.ForeignKey(Khama, on_delete=models.CASCADE,verbose_name = "خامة")
     khama_current_price = models.IntegerField(default = 0,verbose_name="  سعر الخامة وقت الشراء", null=True, blank=True,editable = False)
-    quantity = models.IntegerField(default = 0,verbose_name="  الكمية", null=True, blank=True)
-    total_cost_for_this_khama = models.IntegerField(default = 0,verbose_name="  المجموع", null=True, blank=True,help_text = "عبارة عن حاصل ضرب الكمية فى سعر الوحده للخامة (لاحظ : تتم المحاسبة على سعر الوحده الحالى للمنتج لكن اذا تم تغير سعر المنتج لاحقا لن ينطبق هذا التغيير على الصفوف المسجلة مسبقا ولكن ينطبق على اى صف جديد يتم اضافته, لذلك اذا تم شراء خامة بسعر معين وتم اضافتها ثم تم شراء نفس الخامة فى وقت لاحق وكان سعر الخامة قد تغير يجب اضافة عملية الشراء الجديدة كصف مستقل بدلا من تعديل الكمية فى الصف القديم لان اذا عدلت الكمية فسيحسب المجموع بناء على السعر القديم )")
-    paid = models.IntegerField(default = 0,verbose_name="  المدفوع",  null=True, blank=True)
+    quantity = models.IntegerField(default = 0,verbose_name="  الكمية",  validators=[MinValueValidator(1)])
+    total_cost_for_this_khama = models.IntegerField(default = 0,null=True,blank=True,verbose_name="  المجموع",help_text = "عبارة عن حاصل ضرب الكمية فى سعر الوحده للخامة (لاحظ : تتم المحاسبة على سعر الوحده الحالى للمنتج لكن اذا تم تغير سعر المنتج لاحقا لن ينطبق هذا التغيير على الصفوف المسجلة مسبقا ولكن ينطبق على اى صف جديد يتم اضافته, لذلك اذا تم شراء خامة بسعر معين وتم اضافتها ثم تم شراء نفس الخامة فى وقت لاحق وكان سعر الخامة قد تغير يجب اضافة عملية الشراء الجديدة كصف مستقل بدلا من تعديل الكمية فى الصف القديم لان اذا عدلت الكمية فسيحسب المجموع بناء على السعر القديم )")
+    paid = models.IntegerField(default = 0,verbose_name="  المدفوع" ,validators=[MinValueValidator(0)])
     file = models.FileField(upload_to='khamat_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     
@@ -151,7 +153,7 @@ class ProjectKhamatCosts(models.Model):
 class IntermediaryTableMarketCount(models.Model):
     project = models.ForeignKey('Project', on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     source = models.ForeignKey(MarketSources, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " المورد") 
-    directlyarrived = models.IntegerField(verbose_name = " المدفوع",null=True,blank=True) 
+    directlyarrived = models.IntegerField(verbose_name = " المدفوع",validators=[MinValueValidator(0)]) 
     file = models.FileField(upload_to='MarketCount_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     total_reserved = models.IntegerField(verbose_name = " اجمالى المستحق",null=True,blank=True,default = 0)
     total_paid_until_now = models.IntegerField(verbose_name = " اجمالى المدفوع الى الان",null=True,blank=True,default = 0)
@@ -233,8 +235,8 @@ class ProjectWorkersReserves(models.Model):
     worker = models.ForeignKey(User, on_delete=models.SET_NULL,related_name='who_did', null=True,blank=True,verbose_name = " العامل",limit_choices_to={"type": "W"}) 
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     work = models.CharField(verbose_name=" العمل", max_length=200, null=True, blank=True)
-    price = models.IntegerField(default = 0 ,verbose_name="  التكلفة المستحقة",  null=True, blank=True)
-    paid = models.IntegerField(default = 0,verbose_name="  المدفوع",  null=True, blank=True)
+    price = models.IntegerField(default = 0 ,verbose_name="  التكلفة المستحقة", validators=[MinValueValidator(0)])
+    paid = models.IntegerField(default = 0,verbose_name="  المدفوع",validators=[MinValueValidator(0)],help_text = "المبلغ الواصل للعميل")
     file = models.FileField(upload_to='files/', null=True,blank=True,verbose_name = "   ملف ")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
     def charge(self):
@@ -276,32 +278,27 @@ class ProjectWorkersReserves(models.Model):
         verbose_name='  عمل '
 
 class Project(models.Model):
+    code = models.CharField(verbose_name="الكود", max_length=12, editable=False, null=True, blank=True)
     # user=models.ForeignKey(MainUser,on_delete=models.CASCADE,null=True,blank=True,editable = False)
-    project_name = models.TextField(verbose_name=",وصف المشروع",default = "---", max_length=200)
+    project_name = models.TextField(verbose_name="وصف المشروع", max_length=200)
     client = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="عميل",limit_choices_to={"type": "C"})
     project_address = models.CharField(verbose_name=" عنوان المشروع", max_length=200, null=True, blank=True)
     isdesignwork = models.BooleanField(default=False,verbose_name="المشروع يتضمن اعمال تصميم ؟ ")
     issupervision = models.BooleanField(default=False,verbose_name="المشروع يتضمن اعمال اشراف ؟")
     coin = models.ForeignKey(Coin,on_delete=models.SET_NULL,null=True,blank=True,verbose_name="عملة التعامل",help_text = "تعنى ان جميع الحسابات والارقام الحسابية المسجلة فى هذا المشروع هى بهذه العمله")
-    
-    # engineers = models.ManyToManyField(
-    #     User,
-    #     related_name='projects_as_engineer',
-    #     blank=True,
-    #     verbose_name="مهندس",
-    #     limit_choices_to={"type": "E"}
-    # )
-    # workers = models.ManyToManyField(
-    #     User,
-    #     related_name='projects_as_worker',
-    #     blank=True,
-    #     verbose_name="عامل",
-    #     limit_choices_to={"type": "W"}
-    # )
-    discount = models.IntegerField(verbose_name = "الخصم",default = 0 ,null=True,blank=True)
+    discount = models.IntegerField(verbose_name = "الخصم",default = 0 ,validators=[MinValueValidator(0)])
     date_added = models.DateTimeField(verbose_name = " تاريخ الانشاء",auto_now_add=True,null=True,blank=True) 
     is_done = models.BooleanField(verbose_name = "  المشروع منتهى",default=False ,help_text = "اختيار هذا المربع (تظليلة بالازرق) يعنى ان هذا المشروع تم الانتهاء منه")
     notes = models.CharField(verbose_name=" ملاحظات", max_length=1000, null=True, blank=True)
+    
+    def validate_client(self, value):
+        if value is None:
+            raise ValidationError("يجب اختيار عميل للمشروع.")
+        # Additional validation logic if needed
+
+    def clean(self):
+        super().clean()
+        self.validate_client(self.client)
     
     # next totalcharge is used only for filtering be debit and ndebit (كشف المديونيات )
     def totalcharge(self):
@@ -354,11 +351,20 @@ class Project(models.Model):
         else:
             total_charge = all_inpay_costs - totaldesignworkscosts - totalengsupervisionworkscosts - total_khamat_cost - total_workersreserves_cost
         return total_charge
-    
+
     def save(self, *args, **kwargs):
         if self.client and not self.project_address:
             if self.client.address:
                 self.project_address = self.client.address
+        
+        if not self.code:
+            # Generate the code
+            current_date = datetime.now()
+            year = current_date.strftime("%y")
+            month = current_date.strftime("%m")
+            day = current_date.strftime("%d")
+            random_numbers = ''.join(str(random.randint(0, 9)) for _ in range(4))
+            self.code = f"{year}{month}{day}{random_numbers}"
         super().save(*args, **kwargs)
     class Meta:
         verbose_name_plural = 'المشاريع'

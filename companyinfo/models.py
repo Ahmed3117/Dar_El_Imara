@@ -2,8 +2,8 @@ from django.db import models
 
 # Create your models here.
 class CompanyInfo(models.Model):
-    name = models.CharField(verbose_name=" الاسم", max_length=200, null=True, blank=True)
-    phone = models.CharField(verbose_name=" الموبايل", max_length=11, null=True, blank=True)
+    name = models.CharField(verbose_name=" الاسم", max_length=200)
+    phone = models.CharField(verbose_name=" الموبايل", max_length=11)
     address = models.CharField(verbose_name=" العنوان", max_length=200, null=True, blank=True)
     mail = models.CharField(verbose_name=" الايميل", max_length=200, null=True, blank=True)
 

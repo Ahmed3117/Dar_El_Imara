@@ -2,6 +2,16 @@ from django.db import models
 from maindata.models import EmployeeCategory
 from datetime import datetime
 import random
+from django.core.exceptions import ValidationError
+
+
+def validate_name_length(value):
+    """
+    Custom validator to ensure the name field has at least 3 words.
+    """
+    words = value.split()
+    if len(words) < 3:
+        raise ValidationError("الاسم لابد ان يكون ثلاثى او اكثر")
 
 class User(models.Model):
     user_type = (
@@ -10,7 +20,7 @@ class User(models.Model):
         ("W", "عامل"),
     )
     type = models.CharField(verbose_name="النوع", choices=user_type, max_length=10, default="C", null=True, blank=True)
-    name = models.CharField(verbose_name="الاسم", max_length=200, null=True, blank=True)
+    name = models.CharField(verbose_name="الاسم", max_length=200, validators=[validate_name_length])
     # national_id = models.CharField(verbose_name="الرقم القومى", max_length=14, null=True, blank=True)
     phone_number = models.CharField(verbose_name="رقم التليفون", max_length=20, null=True, blank=True)
     address = models.CharField(verbose_name="العنوان", max_length=100, null=True, blank=True)
@@ -53,7 +63,7 @@ class Employee(models.Model):
         verbose_name = 'بيانات اضافية للموظف'
 
 class MarketSources(models.Model):
-    sourcemarket = models.CharField(verbose_name="الاسم", max_length=200, null=True, blank=True)
+    sourcemarket = models.CharField(verbose_name="الاسم", max_length=200)
     phone_number = models.CharField(verbose_name="رقم التليفون", max_length=20, null=True, blank=True)
     address = models.CharField(verbose_name="العنوان", max_length=100, null=True, blank=True)
     class Meta:

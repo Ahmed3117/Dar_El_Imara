@@ -1,13 +1,14 @@
 from django.db import models
 from maindata.models import Project
 from userdata.models import Employee,User
+from django.core.validators import MinValueValidator
 # Create your models here.
 
 # السحب من الخزينة لصالح مشاريع معينة
 class MoneyWithDraw(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     user = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "القائم بالسحب") 
-    ammount = models.IntegerField(verbose_name = " القيمة",null=True,blank=True)
+    ammount = models.IntegerField(verbose_name = " القيمة",default=0,validators=[MinValueValidator(0)])
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     pay_reason = models.CharField(verbose_name="سبب الصرف", max_length=200, null=True, blank=True)
     # pay_reason_category = models.CharField(verbose_name=" بند الصرف",choices=Payreasoncategory, max_length=10, null=True, blank=True)

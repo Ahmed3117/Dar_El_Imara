@@ -1,6 +1,6 @@
 from django.db import models
 from maindata.models import ProjectKhamatCosts, ProjectWorkersReserves
-
+from django.core.validators import MinValueValidator
 from userdata.models import MarketSources, User
 from maindata.models import Project
 # Create your models here.
@@ -8,7 +8,7 @@ from maindata.models import Project
 class WorkerCount(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     worker = models.ForeignKey(User, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "العامل" ,limit_choices_to={"type": "W"}) 
-    directlyarrived = models.IntegerField(verbose_name = " المدفوع",null=True,blank=True,default = 0)
+    directlyarrived = models.IntegerField(verbose_name = " المدفوع",default = 0,validators=[MinValueValidator(0)])
     # charge_reserved = models.IntegerField(verbose_name = " اجمالى باقى المستحق",null=True,blank=True,default = 0)
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     file = models.FileField(upload_to='WorkerCount_files/', null=True,blank=True,verbose_name = "   فاتورة ")
@@ -54,7 +54,7 @@ class WorkerCount(models.Model):
 class MarketCount(models.Model):
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = "المشروع") 
     source = models.ForeignKey(MarketSources, on_delete=models.SET_NULL, null=True,blank=True,verbose_name = " المورد") 
-    directlyarrived = models.IntegerField(verbose_name = " المدفوع",null=True,blank=True) 
+    directlyarrived = models.IntegerField(verbose_name = " المدفوع",validators=[MinValueValidator(0)]) 
     date_added = models.DateTimeField(verbose_name = " تاريخ الصرف",auto_now_add=True,null=True,blank=True) 
     file = models.FileField(upload_to='MarketCount_files/', null=True,blank=True,verbose_name = "   فاتورة ")
     

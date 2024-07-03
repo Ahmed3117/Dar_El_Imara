@@ -7,7 +7,7 @@ from django.template.context_processors import csrf
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
 from django.db.models import Sum
-
+from django.core.exceptions import ValidationError
 from inoutpay.models import MoneyWithDraw
 from .models import IntermediaryTableWorkerCount,IntermediaryTableMarketCount,ExpectedProjectCosts,ProjectKhamatCosts, ProjectWorkersReserves, Project,inPay
 from subdata.models import EmployeeCategory ,SubCategoryDetail,CategoryDetail
@@ -74,8 +74,8 @@ class DesignWorkInlineAdmin(admin.TabularInline):
 class EngSupervisionInlineAdmin(admin.TabularInline):
     model = EngSupervision
     extra = 0
-    show_change_link = True
-    # classes = ('collapse',)
+    readonly_fields = ('work_cost',)
+    
 
 class ExpectedProjectCostsInlineAdmin(admin.TabularInline):
     model = ExpectedProjectCosts
@@ -118,12 +118,16 @@ class IntermediaryTableMarketCountInlineAdmin(admin.TabularInline):
     model = IntermediaryTableMarketCount
     extra = 0
     max_num = 0
+    def has_delete_permission(self, request, obj=None):
+        return False 
     # show_change_link = True
     # classes = ('collapse',)
 class IntermediaryTableWorkerCountInlineAdmin(admin.TabularInline):
     model = IntermediaryTableWorkerCount
     extra = 0
     max_num = 0
+    def has_delete_permission(self, request, obj=None):
+        return False 
     # show_change_link = True
     # classes = ('collapse',)
 
@@ -131,7 +135,7 @@ class ProjectAdmin(admin.ModelAdmin):
     form = ProjectForm
     def has_add_permission(self, request):
         # if there's already an instance, do not allow adding
-        if self.model.objects.count() > 15:
+        if self.model.objects.count() > 10:
             return False
         return super().has_add_permission(request)
     # # to filter the project objects according to the current logginned user
@@ -153,13 +157,15 @@ class ProjectAdmin(admin.ModelAdmin):
 
     list_display_links = ('project_name',)
     # list_display = ('is_done','project_name','client','projectinfo','totalprojectengsupervisioncosts','projecttotaldesignworkscosts','projectdeservedengsupervisioncosts','alldeservedmoney','totalinpaycosts','charge','designworksdetails','expectedprojectcosts','projectcosts','engsupervisionworksdetails','inpaydatails','printinvoice','date_added')
-    list_display = ('is_done','project_name','client','details','printinvoice','coin','date_added')
-    search_fields = ('client__name','client__code','project_name','project_address','coin__coin')
+    list_display = ('code','is_done','project_name','client','details','printinvoice','coin','date_added')
+    search_fields = ('code','client__name','client__code','project_name','project_address','coin__coin')
     list_filter = ('date_added','is_done',UnpaidFilter)
     inlines = [DesignWorkInlineAdmin,EngSupervisionInlineAdmin,ExpectedProjectCostsInlineAdmin,ProjectKhamatCostsInlineAdmin,ProjectWorkersReservesInlineAdmin,InpayInlineAdmin,IntermediaryTableWorkerCountInlineAdmin,IntermediaryTableMarketCountInlineAdmin]
     change_list_template = 'admin/maindata/Project/change_list.html'
     autocomplete_fields = ('client',)
     ordering = ('is_done','date_added')
+    readonly_fields = ('code',)
+
     # class Media:
     #     js = ('/static/admin/js/custom_project_costs_inline.js',)
     # form = ClientForm

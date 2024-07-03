@@ -155,7 +155,16 @@
                                                     {% endif %}
                                                     {% for proj in projects %}
                                                         {% if not proj.id == project.id %}
-                                                            <option value="{{proj.id}}">{{proj.client.name}} - {{proj.project_name}}</option>
+                                                            <option value="{{proj.id}}">
+                                                                {% if proj.client %}
+                                                                {{proj.client.name}} 
+                                                                {% endif %}
+                                                                {% if proj.code %}
+                                                                - {{proj.code}} 
+                                                                {% endif %}
+                                                                {% if proj.project_name %}
+                                                                - {{proj.project_name}}</option>
+                                                                {% endif %}
                                                         {% endif %}
                                                     {% endfor %}
                                             </select>
@@ -200,6 +209,26 @@
                                 {% if client.code %}
                                 <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">الكود:</span> {{client.code}}</div>
                                 {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col align-self-start d-sm-flex justify-content-start">
+                            <hr class="d-sm-none" />
+                            <div class="text-grey-m2">
+                                <div class="row text-white bgm py-25 ">
+                                    معلومات المشروع
+                                </div>
+                                {% if project.code %}
+                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">الكود:</span> {{project.code}}</div>
+                                {% endif %}
+                                {% if project.project_address %}
+                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">عنوان:</span> {{project.project_address}}</div>
+                                {% endif %}
+                                {% if project.project_name %}
+                                <div class="my-2"><i class="fa fa-circle text-blue-m2 text-xs mr-1"></i> <span class="text-600">الوصف:</span> {{project.project_name}}</div>
+                                {% endif %}
+                                
+
                             </div>
                         </div>
                     
@@ -507,7 +536,7 @@
                                                     <div class="d-none d-sm-block col-3 col-sm-3">مقطعية</div>
                                                     {% endif %}
                                                     <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.ammount}}</div>
-                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.work_cost}}</div>
+                                                    <div class="d-none d-sm-block col-2 col-sm-2">{{engsupervisionwork.workcost}}</div>
                                                 </div>
                                                 {% empty %}
                                                 <div class="row mb-2 mb-sm-0 py-25">
